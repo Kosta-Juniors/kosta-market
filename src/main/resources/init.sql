@@ -17,14 +17,14 @@ CREATE TABLE TBL_ADDRESS (
   user_id int,
   delivery_place varchar(255) NOT NULL,
   is_default_address char(1) NOT NULL,
-  FOREIGN KEY (user_id) references TBL_USER(user_id)
+  FOREIGN KEY (user_id) references TBL_USER(user_id) ON DELETE CASCADE
 );
 
 CREATE TABLE TBL_SELLER (
   seller_id int PRIMARY KEY AUTO_INCREMENT,
   user_id int,
   business_id varchar(255) NOT NULL,
-  FOREIGN KEY (user_id) references TBL_USER(user_id)
+  FOREIGN KEY (user_id) references TBL_USER(user_id) ON DELETE CASCADE
 );
 
 CREATE TABLE TBL_PRODUCT (
@@ -41,8 +41,8 @@ CREATE TABLE TBL_SELLER_PRODUCT (
   seller_product_id int PRIMARY KEY AUTO_INCREMENT,
   seller_id int,
   product_id int,
-  FOREIGN KEY (seller_id) references TBL_SELLER(seller_id),
-  FOREIGN KEY (product_id) references TBL_PRODUCT(product_id)
+  FOREIGN KEY (seller_id) references TBL_SELLER(seller_id) ON DELETE CASCADE,
+  FOREIGN KEY (product_id) references TBL_PRODUCT(product_id) ON DELETE CASCADE
 );
 
 CREATE TABLE TBL_CATEGORY (
@@ -54,8 +54,8 @@ CREATE TABLE TBL_PRODUCT_CATEGORY (
   product_category_id int PRIMARY KEY AUTO_INCREMENT,
   product_id int,
   category_id int,
-  FOREIGN KEY (product_id) references TBL_PRODUCT(product_id),
-  FOREIGN KEY (category_id) references TBL_CATEGORY(category_id)
+  FOREIGN KEY (product_id) references TBL_PRODUCT(product_id) ON DELETE CASCADE,
+  FOREIGN KEY (category_id) references TBL_CATEGORY(category_id) ON DELETE CASCADE
 );
 
 CREATE TABLE TBL_ORDER (
@@ -67,7 +67,7 @@ CREATE TABLE TBL_ORDER (
   payment_date date,
   payment_method int NOT NULL,
   order_state int NOT NULL,
-  FOREIGN KEY (product_id) references TBL_PRODUCT(product_id)
+  FOREIGN KEY (product_id) references TBL_PRODUCT(product_id) ON DELETE CASCADE
 );
 
 CREATE TABLE TBL_USER_ORDER (
@@ -75,7 +75,7 @@ CREATE TABLE TBL_USER_ORDER (
   user_id int,
   product_id int,
   address_id int,
-  FOREIGN KEY (user_id) references TBL_USER(user_id),
-  FOREIGN KEY (product_id) references TBL_PRODUCT(product_id),
-  FOREIGN KEY (address_id) references TBL_ADDRESS(address_id)
+  FOREIGN KEY (user_id) references TBL_USER(user_id) ON DELETE CASCADE,
+  FOREIGN KEY (product_id) references TBL_PRODUCT(product_id) ON DELETE CASCADE,
+  FOREIGN KEY (address_id) references TBL_ADDRESS(address_id) ON DELETE CASCADE
 );
