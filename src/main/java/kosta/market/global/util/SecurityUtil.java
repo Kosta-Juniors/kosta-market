@@ -77,4 +77,15 @@ public class SecurityUtil {
 		getCurrentSession().setAttribute(AUTHORIZATION, value);
 	}
 
+	public static Object getAttribute(String key){
+		return getCurrentSession().getAttribute(key);
+	}
+
+	public static void setAttribute(String key, Object value){
+		getCurrentSession().setAttribute(key, value);
+	}
+
+	public static void invalidate(){
+		getCurrentSession().invalidate();
+	}
 }

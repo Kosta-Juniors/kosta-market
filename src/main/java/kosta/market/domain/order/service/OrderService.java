@@ -1,5 +1,7 @@
 package kosta.market.domain.order.service;
 
+import java.util.List;
+
 public interface OrderService {
 	/**
 	 * 기능 : 상품 주문 <br>
@@ -11,7 +13,7 @@ public interface OrderService {
 	 * @param orderRequestDto 주문요청 정보를 담은 DTO
 	 * @return 상품 추가 성공 시 true, 아니면 false
 	 */
-	boolean addOrder(OrderRequestDto orderRequestDto);
+	boolean addOrder(Object orderRequestDto);
 
 	/**
 	 * 기능 : 구매자 주문 리스트 <br>
@@ -21,7 +23,7 @@ public interface OrderService {
 	 *
 	 * @return 조회할 값이 존재할 시 ArrayList&lt;&gt;, 없으면 null
 	 */
-	List<OrderListDto> listByUserIdOrder();
+	List<Object> listByUserIdOrder();
 
 	/**
 	 * 기능 : 판매자 주문 리스트 <br>
@@ -32,7 +34,7 @@ public interface OrderService {
 	 *
 	 * @return 조회할 값이 존재할 시 ArrayList&lt;Object&gt;, 없으면 null
 	 */
-	List<OrderListDto> listBySellerIdOrder();
+	List<Object> listBySellerIdOrder();
 
 	/**
 	 * 기능 : 주문 상세 조회 <br>
@@ -43,7 +45,7 @@ public interface OrderService {
 	 * @param orderNo 주문번호
 	 * @return 조회할 값이 존재할 시 Object, 없으면 null
 	 */
-	OrderDetailDto detailOrder(int orderNo);
+	Object detailOrder(int orderNo);
 
 	/**
 	 * 기능 : 상품 교환 신청 <br>

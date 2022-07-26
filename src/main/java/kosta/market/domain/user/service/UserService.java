@@ -1,9 +1,6 @@
 package kosta.market.domain.user.service;
 
-import org.springframework.web.context.request.RequestContextHolder;
-
 public interface UserService {
-
 	/**
 	 * 기능 : 회원가입 <br>
 	 * 설명 : <br>
@@ -12,10 +9,9 @@ public interface UserService {
 	 * 만약, 사업자등록번호가 개인정보 객체에 포함되었다면 <br>
 	 * 판매자 계정을 생성한다.
 	 *
-	 * @param userCreateDto 회원 가입 DTO;
 	 * @return 회원 생성이 성공했다면 true, 아니면 false
 	 */
-	boolean addUser(UserCreateDto userCreateDto);
+	boolean addUser(Object username, Object password, Object name, Object contact, Object businessNo);
 
 	/**
 	 * 기능 : 로그인 <br>
@@ -30,7 +26,7 @@ public interface UserService {
 	 * @param password 비밀번호
 	 * @return 인증이 성공한다면 true, 아니면 false
 	 */
-	boolean loginUser(String username, String password);
+	boolean loginUser(Object username, Object password);
 
 	/**
 	 * 기능 : 회원 정보 수정 <br>
@@ -40,7 +36,7 @@ public interface UserService {
 	 * @param userModifyDto 변경할 개인정보가 담긴 DTO 객체
 	 * @return 회원 정보 수정이 성공한다면 true, 아닌경우 false
 	 */
-	boolean modifyUser(UserModifyDto userModifyDto);
+	boolean modifyUser(Object userModifyDto);
 
 	/**
 	 * 기능 : 회원 삭제 <br>
@@ -49,5 +45,5 @@ public interface UserService {
 	 * @param password 비밀번호
 	 * @return 회원 삭제가 성공한다면 true, 아닌경우 false
 	 */
-	boolean removeUser(String password);
+	boolean removeUser(Object password);
 }

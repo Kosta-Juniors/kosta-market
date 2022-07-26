@@ -9,24 +9,32 @@ import org.apache.ibatis.annotations.Param;
 
 @Mapper
 public interface UserMapper {
-
+	@Select("SELECT LAST_INSERT_ID()")
+	int lastInsertId();
 	@Insert("INSERT INTO TBL_USER(username, password, name, contact) "
-		+ "VALUES(#{user.username}, #{user.password}, #{user.name}, #{user.contact})")
-	int insertUser(@Param("user") User user);
+		+ "VALUES(#{username}, #{password}, #{name}, #{contact})")
+	int insertUser(@Param("username") Object username, @Param("password") Object password, @Param("name") Object name, @Param("contact") Object contact);
 
-	@Insert("INSERT INTO TBL_SELLER(user_id, business_id) "
+	@Insert("INSERT INTO TBL_SELLER(user_id, business_reg_no) "
 		+ "VALUES(#{userId}, #{businessNo})")
-	int insertSeller(@Param("userId") int userId, @Param("businessNo") String businessNo);
+	int insertSeller(@Param("userId") Object userId, @Param("businessNo") Object businessNo);
 
-	@Select("SELECT * FROM TBL_USER WHERE user_id = #{user_id}")
-	User selectUserByUserId(@Param("user_id") int userId);
+	@Insert("INSERT INTO TBL_ADDRESS(user_id, delivery_place, is_default_address) "
+		+ "VALUES(#{userId}, #{deliveryPlace}, #{isDefaultAddress})")
+	int insertAddress(@Param("userId") Object userId, @Param("deliveryPlace") Object deliveryPlace, @Param("isDefaultAddress") Object isDefaultAddress);
+
+	@Select("SELECT * FROM TBL_USER WHERE user_id = #{userId}")
+	User selectUserByUserId(@Param("userId") Object userId);
+
+	@Select("SELECT * FROM TBL_SELLER WHERE user_id = #{userId}")
+	Seller selectSellerByUserId(@Param("userId") Object userId);
 
 	@Update("UPDATE TBL_USER SET password=#{password}, name=#{name}, contact=#{contact} WHERE user_id=#{userId}" )
-	void updateUser(@Param("userId") int userId, @Param("password") String password, @Param("name") String name, @Param("contact") String contact);
+	void updateUser(@Param("userId") Object userId, @Param("password") String password, @Param("name") String name, @Param("contact") String contact);
 
 	@Select("SELECT * FROM TBL_USER WHERE username = #{username} and password = #{password}")
-	User selectUserByUsernameAndPassword(@Param("username") String username, @Param("password") String password);
+	User selectUserByUsernameAndPassword(@Param("username") Object username, @Param("password") Object password);
 
 	@Delete("DELETE FROM TBL_USER WHERE user_id = #{userId}")
-	void deleteUser(@Param("userId") int userId);
+	void deleteUser(@Param("userId") Object userId);
 }
