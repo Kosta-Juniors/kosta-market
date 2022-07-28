@@ -10,10 +10,9 @@ public interface OrderService {
 	 * Session 에 저장된 user_id 를 이용해 상품을 주문한다. <br>
 	 * 단, 주문일자와 결제일자는 자동으로 추가되야 한다. <br>
 	 *
-	 * @param orderRequestDto 주문요청 정보를 담은 DTO
 	 * @return 상품 추가 성공 시 true, 아니면 false
 	 */
-	boolean addOrder(Object orderRequestDto);
+	boolean addOrder(Object productId, Object orderQuantity, Object paymentMethod, Object addressId);
 
 	/**
 	 * 기능 : 구매자 주문 리스트 <br>
@@ -23,7 +22,7 @@ public interface OrderService {
 	 *
 	 * @return 조회할 값이 존재할 시 ArrayList&lt;&gt;, 없으면 null
 	 */
-	List<Object> listByUserIdOrder();
+	Object listByUserIdOrder(Object userId);
 
 	/**
 	 * 기능 : 판매자 주문 리스트 <br>
@@ -34,7 +33,7 @@ public interface OrderService {
 	 *
 	 * @return 조회할 값이 존재할 시 ArrayList&lt;Object&gt;, 없으면 null
 	 */
-	List<Object> listBySellerIdOrder();
+	Object listBySellerIdOrder(Object userId);
 
 	/**
 	 * 기능 : 주문 상세 조회 <br>
@@ -45,7 +44,7 @@ public interface OrderService {
 	 * @param orderNo 주문번호
 	 * @return 조회할 값이 존재할 시 Object, 없으면 null
 	 */
-	Object detailOrder(int orderNo);
+	Object detailOrder(Object orderNo);
 
 	/**
 	 * 기능 : 상품 교환 신청 <br>
@@ -55,7 +54,7 @@ public interface OrderService {
 	 * @param orderNo 주문번호
 	 * @return 상품 교환 요청 성공 시 true, 아니면 false
 	 */
-	boolean exchangeOrder(int orderNo);
+	boolean exchangeOrder(Object orderNo);
 
 	/**
 	 * 기능 : 구매 취소<br>
@@ -66,7 +65,7 @@ public interface OrderService {
 	 * @param orderNo 주문번호
 	 * @return 상품 취소 요청 성공 시 true, 아니면 false
 	 */
-	boolean cancelOrder(int orderNo);
+	boolean cancelOrder(Object orderNo);
 
 	/**
 	 * 기능 : 구매 확정 <br>
@@ -76,5 +75,5 @@ public interface OrderService {
 	 * @param orderNo 주문번호
 	 * @return 구매 확정 요청 성공 시 true, 아니면 false
 	 */
-	boolean confirmOrder(int orderNo);
+	boolean confirmOrder(Object orderNo);
 }
