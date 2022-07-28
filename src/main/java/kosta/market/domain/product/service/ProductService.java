@@ -11,10 +11,9 @@ public interface ProductService {
 	 * 카테고리가 담긴 <b>상품등록요청 객체</b>를 받아 상품을 등록한다.<br>
 	 * 단, 상품 등록 날짜는 자동으로 추가되야 한다.
 	 *
-	 * @param productAddDto 등록할 상품 정보가 담긴 DTO
 	 * @return 상품을 성공적으로 등록했다면 true, 아니면 false
 	 */
-	boolean addProduct(Object productAddDto);
+	boolean addProduct(Object categoryId, Object productName, Object productPrice, Object productQuantity, Object productImgFileName, Object productImgPath, Object productDescription);
 
 	/**
 	 * 기능 : 등록한 상품 리스트 <br>
@@ -45,7 +44,7 @@ public interface ProductService {
 	 * @param productNo 상품 테이블의 상품번호
 	 * @return 상품 정보가 있다면 Object, 아니면 null
 	 */
-	Object detailProduct(int productNo);
+	Object detailProduct(Object productNo);
 
 	/**
 	 * 기능 : 상품 수정 <br>
@@ -64,5 +63,5 @@ public interface ProductService {
 	 * @param productNo 상품번호
 	 * @return 상품이 삭제되었다면 true, 아니면 false
 	 */
-	boolean removeProduct(int productNo);
+	boolean removeProduct(Object productNo);
 }

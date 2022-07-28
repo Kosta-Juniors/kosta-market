@@ -8,6 +8,9 @@
 </head>
 <body>
   <div> 내 배송지 </div>
+    <c:forEach var="address" items="${addressList}">
+      <input type="radio" id="addressId" value="${address.addressId}" /> ${address.deliveryPlace} <br>
+    </c:forEach>
   <div> ----- </div>
   <div> 배송지 <input type="text" name="delivery" id="delivery" value="서울특별시 금천구 호서대벤처타워 4층 403호"/> </div>
   <div> 기본배송지 여부 </div>
@@ -27,8 +30,6 @@ $("#btn-submit").click(function(){
     "delivery" : $('#delivery').val(),
     "default-address" : $('input[name="default-address"]:checked').val()
   };
-  console.log(data);
-  alert("dasd");
   $.ajax({
     type: "POST",
     url: "/user/address/add/proc",

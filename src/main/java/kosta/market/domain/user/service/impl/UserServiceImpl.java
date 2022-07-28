@@ -1,6 +1,7 @@
 package kosta.market.domain.user.service.impl;
 
 import java.util.Objects;
+import kosta.market.domain.product.model.ProductMapper;
 import kosta.market.domain.user.model.Seller;
 import kosta.market.domain.user.model.User;
 import kosta.market.domain.user.model.UserMapper;
@@ -16,6 +17,8 @@ public class UserServiceImpl implements UserService {
 
 	@Autowired
 	private UserMapper userMapper;
+	@Autowired
+	private ProductMapper productMapper;
 	/**
 	 * 기능 : 회원가입 <br> 설명 : <br> 아이디, 비밀번호, 회원명, 연락처가 담긴 <b>개인정보 객체</b>를 받아 <br> 일반 유저 계정을 생성한다. <br> 만약, 사업자등록번호가 개인정보
 	 * 객체에 포함되었다면 <br> 판매자 계정을 생성한다.
@@ -101,5 +104,15 @@ public class UserServiceImpl implements UserService {
 			return true;
 		}
 		return false;
+	}
+	public Object detailAddress(){
+		if(SecurityUtil.isAuthenticated()){
+			return userMapper.selectAddressByUserId(SecurityUtil.getAuthentication());
+		}
+		return null;
+	}
+
+	public Object getUserByUserId(Object userId){
+		return null;
 	}
 }

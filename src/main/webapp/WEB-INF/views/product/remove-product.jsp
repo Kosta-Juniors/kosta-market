@@ -7,27 +7,24 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 </head>
 <body>
-
-  <div> 아이디 <input type="text" name="username" id="username" value="user1" /> </div>
-  <div> 비밀번호 <input type="password" name="password" id="password" value="1111"/> </div>
-  <input type="button" id="btn-submit" value="로그인2">
+  <div> 삭제할 상품번호 <input type="text" id="productId" value="" /> </div>
+  <input type="button" id="btn-submit" value="삭제하기">
 
 </body>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
 <script>
 $("#btn-submit").click(function(){
   const data = {
-    "username" : $('#username').val(),
-    "password" : $('#password').val()
+    "productId" : $('#productId').val(),
   };
   $.ajax({
     type: "POST",
-    url: "/login/proc",
+    url: "/product/remove/proc",
     contentType: 'application/json; charset=utf-8',
 
     data: JSON.stringify(data),
     success: function(data){
-      alert("hello user " + data);
+      alert("delete product/ seller " + data);
       window.location.href = "/";
     },
   });

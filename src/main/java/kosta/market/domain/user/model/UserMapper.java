@@ -1,5 +1,6 @@
 package kosta.market.domain.user.model;
 
+import java.util.List;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Select;
@@ -37,4 +38,7 @@ public interface UserMapper {
 
 	@Delete("DELETE FROM TBL_USER WHERE user_id = #{userId}")
 	void deleteUser(@Param("userId") Object userId);
+
+	@Select("SELECT * FROM TBL_ADDRESS WHERE user_id = #{userId}")
+	List<Address> selectAddressByUserId(@Param("userId") Object userId);
 }

@@ -35,7 +35,7 @@ public class UserController {
 		if(SecurityUtil.isAuthenticated()){
 			return "redirect:/";
 		}
-		return "login";
+		return "user/login";
 	}
 
 	@PostMapping("/login/proc")
@@ -60,7 +60,7 @@ public class UserController {
 			return "redirect:/";
 		}
 
-		return "signup";
+		return "user/signup";
 	}
 
 	@ResponseBody
@@ -76,7 +76,7 @@ public class UserController {
 
 	@GetMapping("/user/address/add")
 	public String addAddress(){
-		if(SecurityUtil.isAuthenticated()) return "address";
+		if(SecurityUtil.isAuthenticated()) return "user/address";
 		return "redirect:/";
 	}
 
@@ -89,7 +89,7 @@ public class UserController {
 
 	@GetMapping("/user/modify")
 	public String userModify(){
-		if(SecurityUtil.isAuthenticated()) return "modify-user";
+		if(SecurityUtil.isAuthenticated()) return "user/modify-user";
 		return "redirect:/";
 	}
 
@@ -97,7 +97,7 @@ public class UserController {
 	@ResponseBody
 	public String userModifyProc(){
 		if(SecurityUtil.isAuthenticated()){
-			return "modify-user";
+			return "user/modify-user";
 			//userService.modifyUser();
 		}
 		return "redirect:/";
@@ -105,14 +105,13 @@ public class UserController {
 
 	@GetMapping("/user/delete")
 	public String userRemove(){
-		if(SecurityUtil.isAuthenticated()) return "delete-user";
+		if(SecurityUtil.isAuthenticated()) return "user/delete-user";
 		return "redirect:/";
 	}
 
 	@PostMapping("/user/delete/proc")
 	@ResponseBody
 	public HttpEntity userRemoveProc(@RequestBody Map<String, Object> resBody) {
-    	System.out.println("RECV : " + resBody.get("password"));
 		if(userService.removeUser(resBody.get("password"))){
 			return new HttpEntity(HttpStatus.OK);
 		}
