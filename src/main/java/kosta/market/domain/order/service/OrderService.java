@@ -1,5 +1,11 @@
 package kosta.market.domain.order.service;
 
+import kosta.market.domain.order.model.OrderDetailDto;
+import kosta.market.domain.order.model.OrderListDto;
+import kosta.market.domain.order.model.OrderRequestDto;
+
+import java.util.List;
+
 public interface OrderService {
 	/**
 	 * 기능 : 상품 주문 <br>
@@ -11,7 +17,9 @@ public interface OrderService {
 	 * @param orderRequestDto 주문요청 정보를 담은 DTO
 	 * @return 상품 추가 성공 시 true, 아니면 false
 	 */
-	boolean addOrder(OrderRequestDto orderRequestDto);
+
+
+	boolean addOrder(OrderRequestDto ord, int product_id);
 
 	/**
 	 * 기능 : 구매자 주문 리스트 <br>
@@ -43,7 +51,7 @@ public interface OrderService {
 	 * @param orderNo 주문번호
 	 * @return 조회할 값이 존재할 시 Object, 없으면 null
 	 */
-	OrderDetailDto detailOrder(int orderNo);
+	OrderDetailDto detailOrder(int orderId);
 
 	/**
 	 * 기능 : 상품 교환 신청 <br>
@@ -53,7 +61,7 @@ public interface OrderService {
 	 * @param orderNo 주문번호
 	 * @return 상품 교환 요청 성공 시 true, 아니면 false
 	 */
-	boolean exchangeOrder(int orderNo);
+	boolean exchangeOrder(int orderId);
 
 	/**
 	 * 기능 : 구매 취소<br>
@@ -64,7 +72,7 @@ public interface OrderService {
 	 * @param orderNo 주문번호
 	 * @return 상품 취소 요청 성공 시 true, 아니면 false
 	 */
-	boolean cancelOrder(int orderNo);
+	boolean cancelOrder(int orderId);
 
 	/**
 	 * 기능 : 구매 확정 <br>
@@ -74,5 +82,5 @@ public interface OrderService {
 	 * @param orderNo 주문번호
 	 * @return 구매 확정 요청 성공 시 true, 아니면 false
 	 */
-	boolean confirmOrder(int orderNo);
+	boolean confirmOrder(int orderId);
 }
