@@ -1,5 +1,6 @@
 package kosta.market.domain.order.model;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import kosta.market.domain.product.model.Product;
@@ -57,18 +58,6 @@ public interface OrderMapper {
 
 
 
-//	@Select("select A.*, B.product_name, D.payment_price, D.payment_method, F.delivery_place, G.name, G.contact" +
-//			" from TBL_ORDER as A" +
-//			" left join TBL_PRODUCT as B on A.product_id=B.product_id" +
-//			" left join TBL_ORDER_PAYMENT as C on A.order_id=C.order_id" +
-//			" left join TBL_PAYMENT as D on C.payment_id=D.payment_id" +
-//			" left join TBL_USER_ORDER as E on A.order_id=E.order_id" +
-//			" left join TBL_ADDRESS as F on E.address_id=F.address_id" +
-//			" left join TBL_USER as G on E.user_id=G.user_id" +
-//			"where A.order_id=#{order_id}")
-//	OrderDetailDto selectOrder(@Param("order_id") int order_id);
-
-
 	@Select("SELECT A.*, B.product_name, D.payment_price, D.payment_method, F.delivery_place, G.name, G.contact" +
 			" FROM TBL_ORDER as A" +
 			" LEFT JOIN TBL_PRODUCT AS B ON A.product_id=B.product_id" +
@@ -82,15 +71,28 @@ public interface OrderMapper {
 
 
 
-	@Select("SELECT * FROM TBL_ORDER AS A JOIN"
-		+ " TBL_USER_ORDER AS B ON A.order_id = B.order_id"
-		+ " WHERE B.user_id = #{userId}")
-	List<Order> selectOrderListByUserId(@Param("userId") int userId);
+	// (구매자)주문리스트
+	@Select("SELECT A.order_id, B.product_name, A.order_quantity, D.payment_price, A.order_state" +
+			" FROM TBL_ORDER AS A" +
+			" LEFT JOIN TBL_PRODUCT AS B ON A.product_id=B.product_id" +
+			" LEFT JOIN TBL_ORDER_PAYMENT AS C ON A.order_id=C.order_id" +
+			" LEFT JOIN TBL_PAYMENT AS D ON C.payment_id=D.payment_id" +
+			" LEFT JOIN TBL_USER_ORDER AS E ON A.order_id=E.order_id" +
+			" WHERE E.user_id = #{user_id}")
+	ArrayList<OrderListDto> selectOrderListByUserId(@Param("user_id") int user_id);
 
-	@Select("SELECT * FROM TBL_ORDER AS A JOIN"
-		+ " TBL_SELLER_PRODUCT AS B ON A.product_id = B.product_id"
-		+ " WHERE B.seller_id = #{sellerId}")
-	List<Order> selectOrderListBySellerId(@Param("sellerId") int sellerId);
+
+
+
+	// (판매자)주문리스트
+	@Select("SELECT A.order_id, B.product_name, A.order_quantity, D.payment_price, A.order_state" +
+			" FROM TBL_ORDER AS A" +
+			" LEFT JOIN TBL_PRODUCT AS B ON A.product_id=B.product_id" +
+			" LEFT JOIN TBL_ORDER_PAYMENT AS C ON A.order_id=C.order_id" +
+			" LEFT JOIN TBL_PAYMENT AS D ON C.payment_id=D.payment_id" +
+			" LEFT JOIN TBL_SELLER_PRODUCT AS H ON B.product_id=H.product_id" +
+			" WHERE H.seller_id = #{seller_id}")
+	List<OrderListDto> selectOrderListBySellerId(@Param("seller_id") int seller_id);
 
 
 

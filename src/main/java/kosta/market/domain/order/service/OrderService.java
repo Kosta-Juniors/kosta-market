@@ -29,7 +29,8 @@ public interface OrderService {
 	 *
 	 * @return 조회할 값이 존재할 시 ArrayList&lt;&gt;, 없으면 null
 	 */
-	List<OrderListDto> listByUserIdOrder();
+
+	List<OrderListDto> listByUserIdOrder(int user_id);
 
 	/**
 	 * 기능 : 판매자 주문 리스트 <br>
@@ -40,7 +41,7 @@ public interface OrderService {
 	 *
 	 * @return 조회할 값이 존재할 시 ArrayList&lt;Object&gt;, 없으면 null
 	 */
-	List<OrderListDto> listBySellerIdOrder();
+	List<OrderListDto> listBySellerIdOrder(int seller_id);
 
 	/**
 	 * 기능 : 주문 상세 조회 <br>
