@@ -99,8 +99,18 @@ public interface OrderMapper {
 	@Select("SELECT * FROM TBL_PAYMENT WHERE payment_id = #{paymentId}")
 	Payment selectPayment(@Param("paymentId") int paymentId);
 
-	@Update("UPDATE TBL_ORDER SET order_state = #{orderState} WHERE order_id = #{order_id}")
-	int updateOrderState(@Param("orderState") int orderState, @Param("order_id") int order_id);
+
+	// 주문상태수정 - 교환신청
+	@Update("UPDATE TBL_ORDER SET order_state = 3 WHERE order_id = #{order_id}")
+	int updateOrderStateExchange(@Param("order_id") int order_id);
+
+	// 주문상태수정 - 구매취소
+	@Update("UPDATE TBL_ORDER SET order_state = 4 WHERE order_id = #{order_id}")
+	int updateOrderStateCancel(@Param("order_id") int order_id);
+
+	// 주문상태수정 - 구매확정
+	@Update("UPDATE TBL_ORDER SET order_state = 5 WHERE order_id = #{order_id}")
+	int updateOrderStateConfirm(@Param("order_id") int order_id);
 
 	@Update("update TBL_PRODUCT set product_quantity = product_quantity + #{order_quantity} where product_id = #{product_id}")
 	int updateProductQuantity(@Param("product_id") int product_id, @Param("order_quantity") int order_quantity);

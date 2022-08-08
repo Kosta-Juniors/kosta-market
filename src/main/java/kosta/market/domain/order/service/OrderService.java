@@ -64,6 +64,8 @@ public interface OrderService {
 	 */
 	boolean exchangeOrder(int orderState , int orderId);
 
+	boolean exchangeOrder(int orderId);
+
 	/**
 	 * 기능 : 구매 취소<br>
 	 * 설명 : 구매한 상품의 *<b><u>주문 상태</b></u>를 <b>취소/환불</b>로 변경한다.<br>

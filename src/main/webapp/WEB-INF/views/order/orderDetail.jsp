@@ -57,7 +57,7 @@
 <hr>
 <!-- 추후 기능추가 -->
 <a href="/order/sheet/${orderDetail.order_id}/exchange">상품교환신청</a> <br>
-<a href="/order/sheet/${orderDetail.order_id}/cancle">구매취소</a> <br>
+<a href="/order/sheet/${orderDetail.order_id}/cancel">구매취소</a> <br>
 <a href="/order/sheet/${orderDetail.order_id}/confirm">구매확정</a> <br>
 
 <hr>

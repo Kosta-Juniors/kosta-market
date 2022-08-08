@@ -136,15 +136,13 @@ public class OrderController {
     //orderExchange(상품교환신청)은 jsp페이지 없이 기능만 구현
     @GetMapping(value = "/order/sheet/{order_id}/exchange")
     public String orderExchange(@PathVariable("order_id") int order_id){
-        int orderState = 3;
-        service.exchangeOrder(orderState, order_id);
+        service.exchangeOrder(order_id);
         return "redirect:/order/sheet/"+order_id;
     }
 
-    @GetMapping(value = "/order/sheet/{order_id}/cancle")
+    @GetMapping(value = "/order/sheet/{order_id}/cancel")
     public String orderCancel(@PathVariable("order_id") int order_id){
-        int orderState = 4;
-        service.exchangeOrder(orderState, order_id);
+        service.cancelOrder(order_id);
 
         //product의 주문수량도 바꿔주자
         OrderDetailDto orderDetail = service.detailOrder(order_id);
@@ -155,8 +153,7 @@ public class OrderController {
 
     @GetMapping(value = "/order/sheet/{order_id}/confirm")
     public String orderConfirm(@PathVariable("order_id") int order_id){
-        int orderState = 5;
-        service.exchangeOrder(orderState, order_id);
+        service.confirmOrder(order_id);
         return "redirect:/order/sheet/"+order_id;
     }
 
