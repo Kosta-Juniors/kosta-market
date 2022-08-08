@@ -18,7 +18,5 @@ public class ProductCreateDto {
     private String product_description;
     private int product_quantity;
     private int category_id;
-    private MultipartFile product_img_file;
-    //추후에 카타고리 분리필요
 
 }

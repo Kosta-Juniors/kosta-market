@@ -3,6 +3,7 @@ package kosta.market.domain.product.service;
 import kosta.market.domain.product.model.*;
 import kosta.market.domain.product.model.Category;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -16,9 +17,10 @@ public interface ProductService {
 	 * 단, 상품 등록 날짜는 자동으로 추가되야 한다.
 	 *
 	 * @param productCreateDto 등록할 상품 정보가 담긴 DTO
+	 * @param imgFile 상품이미지파일
 	 * @return 상품을 성공적으로 등록했다면 true, 아니면 false
 	 */
-	boolean createProduct(ProductCreateDto productCreateDto);
+	boolean createProduct(ProductCreateDto productCreateDto,MultipartFile imgFile);
 
 	/**
 	 * 기능 : 상품 리스트 <br>
@@ -97,26 +99,27 @@ public interface ProductService {
 	 * 설명 : <br>
 	 * 1. 각 상품별 이미지 파일을 저장한다.<br>
 	 *
-	 *@Param productAddDto 이미지 파일이 저장된 Dto
-	 */
-	public void saveImg(ProductCreateDto productCreateDto);
+	 *@Param product_img_file 상품관련이미지파일
+	 *@return UUID가 적용된 이미지파일명 반환
+	 * /
+	String saveImg(MultipartFile product_img_file);
+
 	/**
 	 * 기능 : 파일 이미지 호출 <br>
 	 * 설명 : <br>
 	 * 1. 각 상품별 저정된 이미지 파일을 호출한다.<br>
 	 *
-	 *@Param product_img_name 이미지 파일 아룸
+	 * @Param product_img_name 이미지 파일 아룸
 	 * @return 상품이미지 검색 성공 시 이미지 파일 반환
 	 */
-	public ResponseEntity<byte[]> imgProduct(String product_img_name);
-
+	ResponseEntity<byte[]> imgProduct(String product_img_name);
 
 	/**
-	 * 기능 : 파일 이미지 업데이트 <br>
+	 * 기능 : 파일 이미지 삭제 <br>
 	 * 설명 : <br>
-	 * 1. 각 상품별 이미지 파일을 저장한다.<br>
+	 * 1. 해당하는 상품에 적용된 이미지 파일을 삭제한다.<br>
 	 *
-	 *@Param productDto 이미지 파일이 저장된 Dto
+	 *@Param product_img_name 삭제할 이미지 파일 이름
 	 */
-	public void updateImg(ProductDto productDto);
+	void deleteImg(String product_img_name);
 }

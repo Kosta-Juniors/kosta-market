@@ -10,7 +10,8 @@ public interface ProductMapper {
 
         // ** 상품 추가 기능
         //PRODUCT 테이블에 추가
-        @Insert("INSERT INTO TBL_PRODUCT VALUES(null, #{name}, #{price}, #{imgFileName}, #{imgPath}, #{description}, #{quantity},now())")
+        @Insert("INSERT INTO TBL_PRODUCT VALUES(null, #{name}, #{price}, #{imgFileName}, #{imgPath}, #{description}, #{quantity}," +
+                "now(),'N')")
         int insertProduct(@Param("name") String productName,
                           @Param("price") int productPrice,
                           @Param("imgFileName") String productImgFileName,
@@ -35,7 +36,8 @@ public interface ProductMapper {
               @Select("SELECT A.* FROM TBL_PRODUCT as A " +
                 "JOIN TBL_SELLER_PRODUCT as B ON A.product_id=B.product_id " +
                 "WHERE B.seller_id=#{sellerId} " +
-                "ORDER BY A.product_id")
+                      "AND deleted LIKE 'N' " +
+                      "ORDER BY A.product_id")
         List<ProductListDto> selectProductSellerList(@Param("sellerId")int sellerId);
 
         // ** 등록된 상품 전체 조회
@@ -70,13 +72,13 @@ public interface ProductMapper {
 
         //** 삭제기능
 
-        // 상품테이블에서 상품 정보 삭제
-        @Delete("DELETE FROM TBL_PRODUCT WHERE product_id=${productId}")
+        // 상품테이블에서 상품 정보 삭제 : deleted 값만 변경
+        @Update("UPDATE TBL_PRODUCT SET deleted='Y' WHERE product_id=${productId}")
         int deleteProduct(@Param("productId") int productId);
 
         //상품식별번호로 값 가져오기 - 수정 필요
-        @Select("SELECT * FROM TBL_PRODUCT WHERE product_id=#{productId}")
-        ProductCreateDto selectProductByProductId(@Param("productId")int productId);
+        @Select("SELECT deleted FROM TBL_PRODUCT WHERE product_id=#{productId}")
+        String selectProductByProductId(@Param("productId")int productId);
 
 
         //** 기존 계획에서 추가된 기능
@@ -87,8 +89,14 @@ public interface ProductMapper {
         //상품명으로 검색
         @Select("SELECT * FROM TBL_PRODUCT " +
                 "WHERE product_name LIKE '%${productName}%' " +
+                "AND deleted LIKE 'N' " +
                 "ORDER BY product_id")
         List<ProductListDto> selectProductListByName(@Param("productName")String productName);
+
+//        // 파일 이름 중복 체크
+//        @Select("SELECT count(*) FROM TBL_PRODUCT " +
+//                "WHERE product_img_file_name=#{imgFileName}")
+//        int selectProductByImgName(@Param("imgFileName")String product_img_file_name);
 
     }
 

@@ -1,24 +1,28 @@
 package kosta.market.domain.product.service.impl;
 
 
+
 import kosta.market.domain.product.model.*;
 import kosta.market.domain.product.service.ProductService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.FileCopyUtils;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.List;
+import java.util.UUID;
 
 @Service
+@RequiredArgsConstructor
 public class ProductServiceImpl implements ProductService {
-    @Autowired
-    private ProductMapper productMapper;
+
+    private final ProductMapper productMapper;
 
     //우선 하드 코딩
     private int sellerId=1;
@@ -28,11 +32,16 @@ public class ProductServiceImpl implements ProductService {
 
     //**상품 등록 기능
     @Override
-    public boolean createProduct(ProductCreateDto productCreateDto) {
+    public boolean createProduct(ProductCreateDto productCreateDto,MultipartFile imgFile) {
         // 추후 session이 추가될 경우 추가할 문법 예시?
         //   int seller_id=session.getAttribute("seller_id");
-        productCreateDto.setProduct_img_file_name(productCreateDto.getProduct_img_file().getOriginalFilename());
+
+        // 파일 이미지 저장
+        String fileName= saveImg(imgFile);
+        productCreateDto.setProduct_img_file_name(fileName);
         productCreateDto.setProduct_img_path(basePath);
+
+
         //입력된 정보 삽입
         //productAddDto에 저장된 상품명이 null 값이 아니라면
         if(productCreateDto.getProduct_name()!=null){
@@ -45,8 +54,7 @@ public class ProductServiceImpl implements ProductService {
                     productCreateDto.getProduct_description(),
                     productCreateDto.getProduct_quantity());
             
-            // 파일 이미지 저장
-            saveImg(productCreateDto);
+
 
             // TBL_PRODUCT 에 상품 정보 저장 후 Auto increment 된 product_id 가져오기
             int productId=productMapper.selectLastInsertId();
@@ -110,9 +118,11 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public boolean updateProduct(ProductDto productModifyDto) {
-        productModifyDto.setProduct_img_file_name(productModifyDto.getProduct_img_file().getOriginalFilename());
+
+        String fileName = saveImg(productModifyDto.getProduct_img_file());
+        productModifyDto.setProduct_img_file_name(fileName);
         productModifyDto.setProduct_img_path(basePath);
-        updateImg(productModifyDto);
+
         if(productModifyDto!=null){
             productMapper.updateProduct(productModifyDto.getProduct_id(),
                                         productModifyDto.getProduct_name(),
@@ -131,16 +141,16 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public boolean deleteProduct(int productId) {
         boolean flag = true;
-
+          System.out.println(productId);
           productMapper.deleteProduct(productId);
 
           //삭제가 제대로 수행되지 않았을 경우
-          if(productMapper.selectProductByProductId(productId)!=null){
+          if(productMapper.selectProductByProductId(productId).equals('N')){
               flag=false;
           }
               return flag;
     }
-    
+
     //상품 카테고리 목록 가져오기 - 상품 등록
     
     @Override
@@ -159,8 +169,12 @@ public class ProductServiceImpl implements ProductService {
         }
     }
     //상품 파일이미지 추가
-    public void saveImg(ProductCreateDto productCreateDto) {
-        String fileName = productCreateDto.getProduct_img_file().getOriginalFilename();
+    public String saveImg(MultipartFile product_img_file) {
+
+        // 무작위 일련번호 추가
+        UUID uuid = UUID.randomUUID();
+        String fileName= uuid.toString()+"_"+product_img_file.getOriginalFilename();
+
         if (fileName != null && !fileName.equals("")) {
             File dir = new File(basePath);
             if (!dir.exists()) {
@@ -168,7 +182,7 @@ public class ProductServiceImpl implements ProductService {
             }
             File file = new File(basePath+ "\\" + fileName);
             try {
-                productCreateDto.getProduct_img_file().transferTo(file);
+               product_img_file.transferTo(file);
             } catch (IllegalStateException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
@@ -177,29 +191,20 @@ public class ProductServiceImpl implements ProductService {
                 e.printStackTrace();
             }
         }
+        return fileName;
     }
+    //파일 이미지 삭제
+    public void deleteImg(String product_img_name){
 
-
-
-    public void updateImg(ProductDto productDto) {
-        String fileName = productDto.getProduct_img_file().getOriginalFilename();
-        if (fileName != null && !fileName.equals("")) {
-            File dir = new File(basePath);
-            if (!dir.exists()) {
-                dir.mkdirs();
+        String path = basePath + "\\";
+        File imgDir = new File(path);
+        if (imgDir.exists()) {
+                File f = new File(path + product_img_name);
+                f.delete();
             }
-            File file = new File(basePath+ "\\" + fileName);
-            try {
-                productDto.getProduct_img_file().transferTo(file);
-            } catch (IllegalStateException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            } catch (IOException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
+        imgDir.delete();
         }
-    }
+
     // ** 파일 이미지 보여주기 (임시)
     public ResponseEntity<byte[]> imgProduct(String product_img_name) {
         String path = basePath + "\\" + product_img_name;
@@ -220,6 +225,7 @@ public class ProductServiceImpl implements ProductService {
 
         return imgResult;
     }
+
 
 
 }

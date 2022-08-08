@@ -1,21 +1,25 @@
 package kosta.market.domain.product.controller;
 
 import kosta.market.domain.product.model.*;
-import kosta.market.domain.product.service.ProductService;
-import org.springframework.beans.factory.annotation.Autowired;
+import kosta.market.domain.product.service.impl.ProductServiceImpl;
+import lombok.RequiredArgsConstructor;
 
+
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 @Controller
+@RequiredArgsConstructor
 public class ProductController {
-    @Autowired
-    ProductService productService;
+    private final ProductServiceImpl productService;
 
 
     //메뉴로 이동
@@ -28,16 +32,17 @@ public class ProductController {
     // 카테고리 리스트 가져오기
     @GetMapping(value="/product/create")
     public String createProduct(Model model){
-            ArrayList<Category> categoryList = null;
-            categoryList=(ArrayList<Category>) productService.listCategory();
+            ArrayList<Category> categoryList = (ArrayList<Category>) productService.listCategory();
             model.addAttribute("categoryList",categoryList);
             return "product/create";
     }
 
     @PostMapping(value="/api/product")
-    public String productCreate(ProductCreateDto productCreateDto){
-        productService.createProduct(productCreateDto);
-        return "redirect:/index";
+    public ResponseEntity productCreate(@RequestPart(value="product") ProductCreateDto productCreateDto,
+                                        @RequestPart(value="imgFile",required = false) MultipartFile imgFile)
+    throws IOException {
+        productService.createProduct(productCreateDto,imgFile);
+        return new ResponseEntity(HttpStatus.OK);
 
     }
 
@@ -45,7 +50,7 @@ public class ProductController {
 
     @GetMapping (value="/product/list")
     public String listProduct(Model model,@RequestParam("user-type") String usertype){
-            System.out.println("hi");
+
             ArrayList<ProductListDto> productList = (ArrayList<ProductListDto>) productService.ListProduct(usertype);
             model.addAttribute("ProductList", productList);
             if(usertype.equals("seller")){
@@ -56,34 +61,43 @@ public class ProductController {
             return"index";
     }
 
-    @PostMapping(value="/api/product/list")
+    // 아직 처리할 정보가 없음
+
+    @GetMapping(value="/api/product/list")
     public void productList(@RequestParam("user-type") String usertype){
+
+
     }
 
     //** 등록된 상품 정보 수정
     @GetMapping(value="/product/{product_id}/update")
     public String updateProduct(Model model, @PathVariable("product_id") int product_id){
-        System.out.println(product_id);
+
         Category category=productService.detailCategory(product_id);
         ProductDto productModifyDto=productService.detailProduct(product_id);
         model.addAttribute("Category",category);
         model.addAttribute("Product",productModifyDto);
         return "product/update";
     }
-    @PostMapping(value="/api/product/{product_id}/update")
+    @PatchMapping(value="/api/product/{product_id}")
     public String productUpdate(ProductDto productUpdateDto,@PathVariable("product_id") int product_id){
+        productService.deleteImg(productUpdateDto.getProduct_img_file_name());
         productService.updateProduct(productUpdateDto);
         return "redirect:/product/list?user-type=seller";
     }
     //**상품 삭제
-    @PostMapping(value="/product/{product_id}/delete")
-    public void deleteProduct(@PathVariable("product_id") int product_id){
-    }
 
-    @PostMapping(value="/api/product/{product_id}/delete")
+    //
+    @GetMapping(value="/product/{product_id}/delete")
+    public String deleteProduct(@PathVariable("product_id") int product_id){
+
+        return "product/seller-list";
+      }
+
+    @DeleteMapping(value="/api/product/{product_id}")
     public String productDelete(@PathVariable("product_id") int product_id){
         productService.deleteProduct(product_id);
-        return "redirect:/product/list?user-type=seller";
+        return "redirect:/product/"+product_id+"/delete";
     }
 
     //** 상품 상세 정보 조회
@@ -96,7 +110,8 @@ public class ProductController {
         return "product/detail";
     }
 
-    @PostMapping(value="/api/product/{product_id}")
+    // 아직 처리해야 될 부분 없음
+    @GetMapping(value="/api/product/{product_id}")
     public void productDetail(@PathVariable("product_id")int product_id){
     }
 
@@ -108,12 +123,8 @@ public class ProductController {
         return "product/user-list";
     }
 
-    @PostMapping(value="/product/productnamelist")
-    public void productNameList(){
-    }
-
     // 상품 이미지 출력
-    @RequestMapping(value="/product/img")
+    @GetMapping(value="/product/img")
     public ResponseEntity<byte[]> productImg(@RequestParam("product_img_file_name") String product_img_file_name) {
         return productService.imgProduct(product_img_file_name);
     }
