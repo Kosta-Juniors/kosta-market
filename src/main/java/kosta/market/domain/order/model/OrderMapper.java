@@ -24,8 +24,8 @@ public interface OrderMapper {
 
 
 	@Insert("INSERT INTO TBL_ORDER VALUES (null, #{productId}, #{orderQuantity}, now(), 0)")
-	int insertOrder(@Param("productId") int productId,
-					@Param("orderQuantity") int orderQuantity);
+	int insertOrder(@Param("productId") int product_id,
+					@Param("orderQuantity") int order_quantity);
 	// int orderState 를 0(주문완료)로 입력
 
 	@Insert("INSERT INTO TBL_PAYMENT VALUES (null, #{paymentPrice}, #{paymentMethod}, now())")
@@ -99,11 +99,14 @@ public interface OrderMapper {
 	@Select("SELECT * FROM TBL_PAYMENT WHERE payment_id = #{paymentId}")
 	Payment selectPayment(@Param("paymentId") int paymentId);
 
-	@Update("UPDATE TBL_ORDER SET order_state = #{orderState}")
-	int updateOrder(@Param("orderState") int orderState);
+	@Update("UPDATE TBL_ORDER SET order_state = #{orderState} WHERE order_id = #{order_id}")
+	int updateOrderState(@Param("orderState") int orderState, @Param("order_id") int order_id);
+
+	@Update("update TBL_PRODUCT set product_quantity = product_quantity + #{order_quantity} where product_id = #{product_id}")
+	int updateProductQuantity(@Param("product_id") int product_id, @Param("order_quantity") int order_quantity);
 
 	@Select("SELECT * FROM TBL_PRODUCT WHERE product_id=#{productId}")
-	Product selectProduct(@Param("productId")int productId);
+	Product selectProduct(@Param("productId")int product_id);
 
 }
 

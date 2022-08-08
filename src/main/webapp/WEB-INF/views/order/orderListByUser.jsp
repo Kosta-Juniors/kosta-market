@@ -15,7 +15,7 @@
 
 <div style="margin-top:10px">
 
-    <div>주문번호 : ${o.order_id} </div>
+    <div>주문번호 : <a href="/order/sheet/${o.order_id}"> ${o.order_id} </a> </div>
 
     <div> 상품명 : ${o.product_name} </div>
 

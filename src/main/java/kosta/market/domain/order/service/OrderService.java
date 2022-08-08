@@ -62,7 +62,7 @@ public interface OrderService {
 	 * @param orderNo 주문번호
 	 * @return 상품 교환 요청 성공 시 true, 아니면 false
 	 */
-	boolean exchangeOrder(int orderId);
+	boolean exchangeOrder(int orderState , int orderId);
 
 	/**
 	 * 기능 : 구매 취소<br>
@@ -83,5 +83,8 @@ public interface OrderService {
 	 * @param orderNo 주문번호
 	 * @return 구매 확정 요청 성공 시 true, 아니면 false
 	 */
+
+	boolean updateProduct(int product_id, int order_quantity);
+
 	boolean confirmOrder(int orderId);
 }
