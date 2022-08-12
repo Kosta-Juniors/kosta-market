@@ -5,7 +5,9 @@ import kosta.market.domain.product.model.Category;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public interface ProductService {
 
@@ -71,9 +73,9 @@ public interface ProductService {
 	 * 기능 : 카테고리 리스트 가져오기 <br>
 	 * 설명 : 상품 등록 시 필요한 카테고리 목록을 미리 받아온다. <br>
 	 *
-	 * @return 카테고리 리스트가 존재하면 ArrayList&lt;Object&gt;, 아니면 null
+	 * @return 카테고리 리스트가 존재하면 Map<String,Object>;, 아니면 null
 	 */
-	List<Category> listCategory();
+	Map<String,Object> listCategory();
 
 	/**
 	 * 기능 : 등록상품 카테고리 목록 가져오기 <br>

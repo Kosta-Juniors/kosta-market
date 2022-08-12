@@ -5,6 +5,7 @@ package kosta.market.domain.product.service.impl;
 import kosta.market.domain.product.model.*;
 import kosta.market.domain.product.service.ProductService;
 import lombok.RequiredArgsConstructor;
+import org.json.simple.JSONObject;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,8 +16,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -154,9 +154,23 @@ public class ProductServiceImpl implements ProductService {
     //상품 카테고리 목록 가져오기 - 상품 등록
     
     @Override
-    public List<Category> listCategory() {
+    public Map<String,Object> listCategory() {
 
-        return productMapper.selectCategoryList();
+        Map<String, Object> data = new HashMap();
+
+        List<Object> categoryList1 = new ArrayList();
+        ArrayList<Category> categoryList2 = (ArrayList<Category>) productMapper.selectCategoryList();
+
+        for(int i = 0; i < categoryList2.size(); i++) {
+            Map<String, Object> category = new HashMap<>();
+            category.put("categoryId", categoryList2.get(i).getCategory_id());
+            category.put("categoryName", categoryList2.get(i).getCategory_name());
+            categoryList1.add(category);
+        }
+
+        data.put("data", categoryList1);
+
+        return data;
     }
 
     //상품명으로 검색
