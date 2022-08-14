@@ -55,10 +55,11 @@ public interface ProductService {
 	 * 설명 : 상품번호, 상품명, 가격, 이미지파일명, 이미지파일경로, 설명, 재고수량, <br>
 	 * 카테고리가 담긴 <b>상품수정요청 객체</b>를 받아 상품을 수정한다.<br>
 	 *
-	 * @param productDto 변경할 상품 정보가 담겨있는 DTO
+	 * @param productUpdateDto 변경할 상품 정보가 담겨있는 DTO
+	 * @param imgFile 변경할 상품 이미지                           
 	 * @return 상품이 성공적으로 변경되면 true, 아니면 false
 	 */
-	boolean updateProduct(ProductDto productDto);
+	boolean updateProduct(ProductDto productUpdateDto, MultipartFile imgFile);
 
 	/**
 	 * 기능 : 상품 삭제 <br>

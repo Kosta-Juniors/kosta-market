@@ -134,20 +134,25 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public boolean updateProduct(ProductDto productModifyDto) {
+    public boolean updateProduct(ProductDto productUpdateDto,MultipartFile imgFile) {
 
-        String fileName = saveImg(productModifyDto.getProductImgFile());
-        productModifyDto.setProductImgFileName(fileName);
-        productModifyDto.setProductImgPath(basePath);
+        if(!imgFile.isEmpty()){
+        String fileName = saveImg(imgFile);
+        productUpdateDto.setProductImgFileName(fileName);
+        productUpdateDto.setProductImgPath(basePath);
+        } else {
+            productUpdateDto.setProductImgFileName(productUpdateDto.getProductImgFileName());
+            productUpdateDto.setProductImgPath(basePath);
+        }
 
-        if(productModifyDto!=null){
-            productMapper.updateProduct(productModifyDto.getProductId(),
-                                        productModifyDto.getProductName(),
-                                        productModifyDto.getProductPrice(),
-                                        productModifyDto.getProductImgFileName(),
-                                        productModifyDto.getProductImgPath(),
-                                        productModifyDto.getProductDescription(),
-                                        productModifyDto.getProductQuantity());
+        if(productUpdateDto!=null){
+            productMapper.updateProduct(productUpdateDto.getProductId(),
+                                        productUpdateDto.getProductName(),
+                                        productUpdateDto.getProductPrice(),
+                                        productUpdateDto.getProductImgFileName(),
+                                        productUpdateDto.getProductImgPath(),
+                                        productUpdateDto.getProductDescription(),
+                                        productUpdateDto.getProductQuantity());
             return true;
         } else {
             return false;

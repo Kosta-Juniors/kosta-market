@@ -21,5 +21,4 @@ public class ProductDto {
     private String productImgPath; // 상품이미지저장경로
     private String productDescription; // 상품상세설명
     private int productQuantity; //재고수량
-    private MultipartFile productImgFile;
 }
