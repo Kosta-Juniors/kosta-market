@@ -45,10 +45,10 @@ public interface ProductService {
 	 * 기능 : 상품 상세정보 <br>
 	 * 설명 : 상품번호를 받아 해당 상품의 모든 정보를 조회한다. <br>
 	 *
-	 * @param product_id 상품 테이블의 상품번호
+	 * @param productId 상품 테이블의 상품번호
 	 * @return 상품 정보가 있다면 Object, 아니면 null
 	 */
-	ProductDto detailProduct(int product_id);
+	Map<String,Object> detailProduct(int productId);
 
 	/**
 	 * 기능 : 상품 수정 <br>
@@ -64,10 +64,10 @@ public interface ProductService {
 	 * 기능 : 상품 삭제 <br>
 	 * 설명 : 상품번호를 받아 해당 상품을 삭제한다. <br>
 	 *
-	 * @param product_id 상품번호
+	 * @param productId 상품번호
 	 * @return 상품이 삭제되었다면 true, 아니면 false
 	 */
-	boolean deleteProduct(int product_id);
+	boolean deleteProduct(int productId);
 
 	/**
 	 * 기능 : 카테고리 리스트 가져오기 <br>
@@ -94,7 +94,7 @@ public interface ProductService {
 	 * @Param product_name 상품명
 	 * @return 등록된 상품이 있다면 ArrayList&lt;Object&gt;, 아니면 null
 	 */
-	List<ProductListDto> listProductName(String product_name);
+	List<ProductListDto> listProductName(String productName);
 
 	/**
 	 * 기능 : 파일 이미지 저장 <br>
@@ -114,7 +114,7 @@ public interface ProductService {
 	 * @Param product_img_name 이미지 파일 아룸
 	 * @return 상품이미지 검색 성공 시 이미지 파일 반환
 	 */
-	ResponseEntity<byte[]> imgProduct(String product_img_name);
+	ResponseEntity<byte[]> imgProduct(String productImgName);
 
 	/**
 	 * 기능 : 파일 이미지 삭제 <br>
@@ -123,5 +123,5 @@ public interface ProductService {
 	 *
 	 *@Param product_img_name 삭제할 이미지 파일 이름
 	 */
-	void deleteImg(String product_img_name);
+	void deleteImg(String productImgName);
 }

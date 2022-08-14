@@ -36,22 +36,27 @@ public interface ProductMapper {
               @Select("SELECT A.* FROM TBL_PRODUCT as A " +
                 "JOIN TBL_SELLER_PRODUCT as B ON A.product_id=B.product_id " +
                 "WHERE B.seller_id=#{sellerId} " +
-                      "AND deleted LIKE 'N' " +
+                      "AND A.deleted LIKE 'N' " +
                       "ORDER BY A.product_id")
         List<ProductListDto> selectProductSellerList(@Param("sellerId")int sellerId);
 
         // ** 등록된 상품 전체 조회
-        @Select("SELECT * FROM TBL_PRODUCT ORDER BY product_id")
+        @Select("SELECT * FROM TBL_PRODUCT " +
+                "WHERE deleted LIKE 'N' " +
+                "ORDER BY product_id")
         List<ProductListDto> selectProductList();
 
         // ** 상품 상세 보기
         //상품 테이블에 대한 정보 가져오기
-        @Select("SELECT * FROM TBL_PRODUCT WHERE product_id=#{productId}")
+        @Select("SELECT product_id AS productId, product_name AS productName, product_price AS productPrice, " +
+                "product_img_file_name AS productImgFileName, product_img_path AS productImgPath, " +
+                "product_description AS productDescription, product_quantity AS productQuantity " +
+                "FROM TBL_PRODUCT WHERE product_id=#{productId}")
         ProductDto selectProductDetail(@Param("productId")int productId);
         //? 추가할까 고민인 것 판매자 ID 가져오기?
 
         // 상품 카테고리 가져오기
-        @Select("SELECT * FROM TBL_CATEGORY AS A " +
+        @Select("SELECT A.category_id AS categoryId, A.category_name AS categoryName FROM TBL_CATEGORY AS A " +
                 "JOIN TBL_PRODUCT_CATEGORY AS B ON A.category_id=B.category_id " +
                 "WHERE B.product_id=#{productId}")
         Category selectCategory(@Param("productId")int productId);
@@ -83,7 +88,9 @@ public interface ProductMapper {
 
         //** 기존 계획에서 추가된 기능
         //카테고리 목록 가져오기
-        @Select("SELECT * FROM TBL_CATEGORY ORDER BY category_id")
+        @Select("SELECT category_id as categoryId, " +
+                "category_name as categoryName " +
+                "FROM TBL_CATEGORY ORDER BY category_id")
         List<Category> selectCategoryList();
 
         //상품명으로 검색

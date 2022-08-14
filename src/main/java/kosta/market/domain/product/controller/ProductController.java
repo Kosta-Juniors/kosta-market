@@ -16,8 +16,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @Controller
@@ -75,16 +73,16 @@ public class ProductController {
     @GetMapping(value = "/product/{product_id}/update")
     public String updateProduct(Model model, @PathVariable("product_id") int product_id) {
 
-        Category category = productService.detailCategory(product_id);
-        ProductDto productModifyDto = productService.detailProduct(product_id);
-        model.addAttribute("Category", category);
-        model.addAttribute("Product", productModifyDto);
+//        Category category = productService.detailCategory(product_id);
+//        ProductDto productModifyDto = productService.detailProduct(product_id);
+//        model.addAttribute("Category", category);
+//        model.addAttribute("Product", productModifyDto);
         return "product/update";
     }
 
     @PatchMapping(value = "/api/product/{product_id}")
     public String productUpdate(ProductDto productUpdateDto, @PathVariable("product_id") int product_id) {
-        productService.deleteImg(productUpdateDto.getProduct_img_file_name());
+        productService.deleteImg(productUpdateDto.getProductImgFileName());
         productService.updateProduct(productUpdateDto);
         return "redirect:/product/list?user-type=seller";
     }
@@ -93,7 +91,6 @@ public class ProductController {
     //
     @GetMapping(value = "/product/{product_id}/delete")
     public String deleteProduct(@PathVariable("product_id") int product_id) {
-
         return "product/seller-list";
     }
 
@@ -105,17 +102,18 @@ public class ProductController {
 
     //** 상품 상세 정보 조회
     @GetMapping(value = "/product/{product_id}")
-    public String detailProduct(Model model, @PathVariable("product_id") int product_id) {
-        Category category = productService.detailCategory(product_id);
-        ProductDto productDetailDto = productService.detailProduct(product_id);
-        model.addAttribute("Category", category);
-        model.addAttribute("Product", productDetailDto);
-        return "product/detail";
+    public String detailProduct(@PathVariable("product_id") int product_id) {
+      return "product/detail";
     }
 
     // 아직 처리해야 될 부분 없음
     @GetMapping(value = "/api/product/{product_id}")
-    public void productDetail(@PathVariable("product_id") int product_id) {
+    public ResponseEntity productDetail(@PathVariable("product_id") int productId) throws JsonProcessingException{
+
+        ObjectMapper jsonData = new ObjectMapper();
+        Map<String,Object> data = productService.detailProduct(productId);
+
+        return new ResponseEntity(jsonData.writeValueAsString(data),HttpStatus.OK);
     }
 
     // 상품 이름으로 검색
