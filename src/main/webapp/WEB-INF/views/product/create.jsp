@@ -3,6 +3,7 @@
 <!DOCTYPE html>
 <html>
 <head>
+
     <title>상품등록페이지</title>
 
 </head>
@@ -27,6 +28,8 @@
 
 <script src="https://code.jquery.com/jquery-latest.min.js"></script>
 <script type="text/javascript">
+
+
     //카테고리 목록 가져오기
     $(document).ready(
         $.ajax({
@@ -87,9 +90,6 @@
             alert('상품이 등록되었습니다.');
             location.href = '${pageContext.request.contextPath}/index';
         })
-        //     .fail(function (error) {
-        //     alert(JSON.stringify(error));
-        // });
     }
 
 

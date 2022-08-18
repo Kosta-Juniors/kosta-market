@@ -47,7 +47,7 @@
             var productId = parseInt(urlarray[i]);
         }
     }
-    alert(productId)
+
     // 수정 전 정보 가져오기
     $('document').ready(function () {
 
@@ -61,7 +61,7 @@
                 $('#product_id').attr("value",result.data.productId);
                 $('#product_name').attr("value",result.data.productName);
                 $('#product_price').attr("value",result.data.productPrice);
-                $('#product_img').attr("src","${pageContext.request.contextPath }/product/img?product_img_file_name="+
+                $('#product_img').attr("src","${pageContext.request.contextPath }/api/product/img?product_img_file_name="+
                     result.data.productImgFileName);
                 $('#product_description').attr("value",result.data.productDescription);
                 $('#product_quantity').attr("value",result.data.productQuantity);

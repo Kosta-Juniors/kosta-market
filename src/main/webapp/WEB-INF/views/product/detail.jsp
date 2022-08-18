@@ -6,7 +6,7 @@
 </head>
 <body>
 <h3>상품 상세 정보</h3>
-
+<!---->
 상품식별번호 : <span id="product_id"></span> <br/>
 상품명 : <span id="product_name"></span> <br/>
 상품가격 : <span id="product_price"></span> <br/>
@@ -38,7 +38,7 @@
              $('#product_id').html(result.data.productId);
              $('#product_name').html(result.data.productName);
              $('#product_price').html(result.data.productPrice);
-             $('#product_img').attr("src","${pageContext.request.contextPath }/product/img?product_img_file_name="+
+             $('#product_img').attr("src","${pageContext.request.contextPath }/api/product/img?product_img_file_name="+
              result.data.productImgFileName);
              $('#product_description').html(result.data.productDescription);
              $('#product_quantity').html(result.data.productQuantity);
