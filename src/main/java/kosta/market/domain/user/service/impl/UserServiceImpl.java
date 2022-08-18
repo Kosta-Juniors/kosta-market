@@ -2,13 +2,12 @@ package kosta.market.domain.user.service.impl;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-import kosta.market.domain.user.model.SellerCreateDto;
+import kosta.market.domain.user.model.AddressDto;
+import kosta.market.domain.user.model.SellerDto;
 import kosta.market.domain.user.model.User;
-import kosta.market.domain.user.model.UserAddressDto;
 import kosta.market.domain.user.model.UserCheckDto;
 import kosta.market.domain.user.model.UserCreateDto;
 import kosta.market.domain.user.model.UserMapper;
-import kosta.market.domain.user.model.UserModifyDto;
 import kosta.market.domain.user.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,7 +20,6 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public boolean addUser(UserCreateDto userCreateDto) {
-
         if (userCreateDto.getUsername() != null) {
             userMapper.insertUser(userCreateDto.getUsername(), userCreateDto.getPassword(),
                 userCreateDto.getName(), userCreateDto.getContact());
@@ -29,37 +27,17 @@ public class UserServiceImpl implements UserService {
         } else {
             return false;
         }
-
     }
 
     @Override
     public boolean loginUser(UserCheckDto userCheckDto, HttpSession session) {
 
-        User user = userMapper.selectUserByUserName(userCheckDto.getUsername());
-
+        User user = userMapper.selectUserByUsernameAndPassword(userCheckDto.getUsername(), userCheckDto.getPassword());
         if (user != null && userCheckDto.getPassword().equals(user.getPassword())) {
             session.setAttribute("user_id", user.getUser_id());
-            if (user.getSeller_id() != null) {
+            if ( userMapper.selectJoinUserByUsernameAndPassword(userCheckDto.getUsername(), userCheckDto.getPassword()) != null) {
                 session.setAttribute("seller_id", user.getSeller_id());
             }
-
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    public UserModifyDto modifyUserForm(HttpSession session) {
-        int user_id = (int) session.getAttribute("user_id");
-
-        return userMapper.selectUser(user_id);
-    }
-
-    @Override
-    public boolean modifyUser(UserModifyDto userModifyDto, HttpSession session) {
-        int user_id = (int) session.getAttribute("user_id");
-        if (userModifyDto != null) {
-            userMapper.updateUser(user_id, userModifyDto.getPassword(), userModifyDto.getContact());
             return true;
         } else {
             return false;
@@ -67,82 +45,112 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public int addAddressForm(HttpSession session) {
-        int user_id = (int) session.getAttribute("user_id");
-        User user = userMapper.selectUserByUserId(user_id);
-
-        if (user != null) {
-            return user_id;
-        } else
-
-            return 0;
+    public User userInfo(Integer userId) {
+        return userMapper.selectUserByUserId(userId);
     }
 
     @Override
-    public boolean addAddress(UserAddressDto userAddressDto) {
+    public boolean modifyUser(User user) {
 
-        if (userAddressDto.getDelivery_place() != null) {
-            userMapper.updateAddress(userAddressDto.getUser_id());
-            userMapper.insertAddress(userAddressDto.getUser_id(),
-                userAddressDto.getDelivery_place());
-
+        User userModify = userMapper.selectUserByUserId(user.getUser_id());
+        if (userModify != null) {
+            userMapper.updateUser(userModify.getUser_id(), userModify.getPassword(), userModify.getContact());
             return true;
-        } else
-            return false;
-    }
-
-    @Override
-    public int addSellerForm(HttpSession session) {
-        int user_id = (int) session.getAttribute("user_id");
-        User user = userMapper.selectUserByUserId(user_id);
-
-        if (user != null) {
-            return user_id;
-
-        } else
-            return 0;
-    }
-
-    @Override
-    public boolean addSeller(SellerCreateDto sellerCreateDto) {
-
-        if (sellerCreateDto.getBusiness_reg_no() != null) {
-            userMapper.insertSeller(sellerCreateDto.getUser_id(), sellerCreateDto.getBusiness_reg_no());
-            userMapper.updateSeller(sellerCreateDto.getUser_id(), sellerCreateDto.getBusiness_reg_no());
-            return true;
-        }
-        else {
+        } else {
             return false;
         }
-    }
-
-    @Override
-    public boolean logoutUser(HttpServletRequest request) {
-
-        HttpSession session = request.getSession(false);
-        if (session != null) {
-            session.invalidate();
-            return true;
-        } else
-            return false;
     }
 
     @Override
     public boolean removeUser(UserCheckDto userCheckDto, HttpSession session) {
 
-        int user_id = (int) session.getAttribute("user_id");
-        User user = userMapper.selectUserByUserId(user_id);
+        Integer userId = (Integer) session.getAttribute("user_id");
+        User user = userMapper.selectUserByPassword(userCheckDto.getPassword());
 
-        if ( user != null && userCheckDto.getPassword().equals(user.getPassword())) {
-
-            userMapper.deleteUser(user_id);
+        if (user != null && userCheckDto.getPassword().equals(user.getPassword())) {
+            userMapper.deleteUser(userId);
             session.removeAttribute("user_id");
-
             return true;
-        } else
-           return false;
+        }
+        return false;
     }
+
+    @Override
+    public boolean addAddress(AddressDto addressDto, HttpSession session) {
+
+        Integer userId = (Integer) session.getAttribute("user_id");
+        userMapper.selectAddressByUserId(userId);
+
+        if (addressDto.getDelivery_place() != null) {
+            userMapper.updateAddress(addressDto.getUser_id());
+            userMapper.insertAddress(addressDto.getUser_id(), addressDto.getDelivery_place());
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public AddressDto addressInfo(Integer userId) {
+        return userMapper.selectAddressByUserId(userId);
+    }
+
+    @Override
+    public boolean removeAddress(AddressDto addressDto, HttpSession session) {
+
+        Integer userId = (Integer) session.getAttribute("user_id");
+        userMapper.selectAddressByUserId(userId);
+
+        if (addressDto != null) {
+            userMapper.deleteAddress(addressDto.getAddress_id());
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public boolean addSeller(SellerDto sellerDto, HttpSession session) {
+
+        Integer userId = (Integer) session.getAttribute("user_id");
+        userMapper.selectSellerByUserId(userId);
+
+        if (sellerDto.getBusiness_reg_no() != null) {
+            session.setAttribute("seller_id", sellerDto.getSeller_id());
+            userMapper.insertSeller(sellerDto.getUser_id(), sellerDto.getBusiness_reg_no());
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    @Override
+    public SellerDto sellerInfo(Integer userId) {
+        return userMapper.selectSellerByUserId(userId);
+    }
+
+    @Override
+    public boolean removeSeller(SellerDto sellerDto, HttpSession session) {
+        Object userId = session.getAttribute("user_id");
+        SellerDto seller = userMapper.selectSellerByUserId(userId);
+        if (userId != null) {
+            userMapper.deleteSeller(seller.getSeller_id());
+            session.removeAttribute("seller_id");
+            return true;
+        }
+        return false;
+    }
+
+//    @Override
+//    public boolean logoutUser(HttpServletRequest request) {
+//        HttpSession session = request.getSession(false);
+//        if (session != null) {
+//            session.invalidate();
+//            return true;
+//        }
+//        return false;
+//    }
+
 }
+
 
 
 

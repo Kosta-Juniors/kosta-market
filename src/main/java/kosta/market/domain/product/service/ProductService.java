@@ -12,7 +12,7 @@ public interface ProductService {
 	 * @param productAddDto 등록할 상품 정보가 담긴 DTO
 	 * @return 상품을 성공적으로 등록했다면 true, 아니면 false
 	 */
-	boolean addProduct(ProductAddDto productAddDto);
+//	boolean addProduct(ProductAddDto productAddDto);
 
 	/**
 	 * 기능 : 등록한 상품 리스트 <br>
@@ -23,7 +23,7 @@ public interface ProductService {
 	 *
 	 * @return 등록한 상품이 있다면 ArrayList&lt;Object&gt;, 아니면 null
 	 */
-	List<RegistProductListDto> registListProduct();
+//	List<RegistProductListDto> registListProduct();
 
 	/**
 	 * 기능 : 등록한 상품 리스트 <br>
@@ -34,7 +34,7 @@ public interface ProductService {
 	 *
 	 * @return 등록한 상품이 있다면 ArrayList&lt;Object&gt;, 아니면 null
 	 */
-	List<ProductListDto> listProduct();
+//	List<ProductListDto> listProduct();
 
 	/**
 	 * 기능 : 상품 상세정보 <br>
@@ -43,7 +43,7 @@ public interface ProductService {
 	 * @param productNo 상품 테이블의 상품번호
 	 * @return 상품 정보가 있다면 Object, 아니면 null
 	 */
-	ProductDetailDto detailProduct(int productNo);
+//	ProductDetailDto detailProduct(int productNo);
 
 	/**
 	 * 기능 : 상품 수정 <br>
@@ -53,7 +53,7 @@ public interface ProductService {
 	 * @param productModifyDto 변경할 상품 정보가 담겨있는 DTO
 	 * @return 상품이 성공적으로 변경되면 true, 아니면 false
 	 */
-	boolean modifyProduct(ProductModifyDto productModifyDto);
+//	boolean modifyProduct(ProductModifyDto productModifyDto);
 
 	/**
 	 * 기능 : 상품 삭제 <br>
