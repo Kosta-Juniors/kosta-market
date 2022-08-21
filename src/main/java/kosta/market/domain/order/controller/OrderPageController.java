@@ -1,7 +1,7 @@
 package kosta.market.domain.order.controller;
 
 
-import kosta.market.domain.order.service.OrderServiceImpl;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -19,13 +19,13 @@ public class OrderPageController {
 
     // 상품주문
     @GetMapping(value = "/order/{product_id}")
-    public String addForm(@PathVariable("product_id") int product_id){
+    public String addForm(@PathVariable("product_id") int productId){
 
         // 하드코딩으로 넘김
-        int user_id = 1;
+        int userId = 1;
 
 
-//        if(Objects.equals(user_id,null)){
+//        if(Objects.equals(userId,null)){
 //            return "/user/login";
 //        }else{
 //            return "order/orderProduct";
@@ -35,7 +35,7 @@ public class OrderPageController {
 
     //구매자,판매자 주문 리스트
     @GetMapping(value = "/order/sheet/list?{user-type}")
-    public String orderListByUser(@PathVariable("user-type") int user_type){
+    public String orderListByUser(@PathVariable("user-type") int userType){
 
         return "order/user-list";
     }
