@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
@@ -60,13 +61,13 @@ public class ProductProcessController {
 
     //** 등록된 상품 정보 수정
     @PatchMapping(value = "/api/product/{product_id}")
-    public ResponseEntity productUpdate(@RequestPart(value = "productUpdateDto") ProductDto productUpdateDto,
+    public ResponseEntity productUpdate(@RequestPart(value = "productUpdateDto") ProductDto productDto,
                                         @RequestPart(value = "imgFile", required = false) MultipartFile imgFile,
                                         @PathVariable("product_id") int productId)
             throws IOException {
         // 파일 업로드를 하지 않을 경우 기존 파일 제거 X
 
-        productService.updateProduct(productUpdateDto, imgFile);
+        productService.updateProduct(productDto, imgFile);
         return new ResponseEntity(HttpStatus.OK);
     }
 
@@ -114,7 +115,7 @@ public class ProductProcessController {
         // cart int seller_id=1
 
         if (Objects.equals(cartDto, null)) {
-         return new ResponseEntity(HttpStatus.NOT_FOUND);
+            return new ResponseEntity(HttpStatus.NOT_FOUND);
         } else {
             // 장바구니 추가
             productService.createCart(cartDto);
@@ -141,7 +142,7 @@ public class ProductProcessController {
 
         //cartDto 값이 존재하지 않을 경우 HTTP STATUS NOT_FOUND로 설정
         if (Objects.equals(cartDto, null)) {
-                return new ResponseEntity(HttpStatus.NOT_FOUND);
+            return new ResponseEntity(HttpStatus.NOT_FOUND);
         } else {
             // cartDto 수정
             productService.updateCart(cartDto);
@@ -153,18 +154,207 @@ public class ProductProcessController {
     @DeleteMapping(value = "/api/product/cart")
     public ResponseEntity productCartDelete(@RequestBody(required = false) CartDto cartDto) {
 
+        ObjectMapper jsonData = new ObjectMapper();
+
 //        int userId = 1; productId=22
 //        cartDto 값이 존재하지 않을 경우 HTTP STATUS NOT_FOUND로 설정
         if (Objects.equals(cartDto, null)) {
+            Map<String, Object> data = productService.errorMessage("content");
+
             return new ResponseEntity(HttpStatus.NOT_FOUND);
         } else {
-            // cartDto 수정
-            System.out.println(cartDto.getProductId());
+            // cartDto 삭제
             productService.deleteCart(cartDto.getUserId(), cartDto.getProductId());
             return new ResponseEntity(HttpStatus.OK);
         }
 
     }
 
+
+    // 댓글 관련 기능
+    //** 댓글 등록
+    @PostMapping(value = "/api/product/{product_id}/comment")
+    public ResponseEntity productCommentCreate(@PathVariable("product_id") int productId,
+                                               @RequestBody(required = false) CommentDto commentDto) throws JsonProcessingException {
+
+        ObjectMapper jsonData = new ObjectMapper();
+
+        if (Objects.equals(commentDto, null)) {
+            Map<String, Object> data = productService.errorMessage("content");
+            return new ResponseEntity(jsonData.writeValueAsString(data), HttpStatus.NOT_FOUND);
+        } else {
+            // 장바구니 추가
+            productService.createComment(commentDto);
+            return new ResponseEntity(HttpStatus.OK);
+        }
+    }
+
+    //** 댓글 수정에 필요한 정보 가져오기
+    @GetMapping(value = "/api/product/{product_id}/comment/{comment_id}")
+    public ResponseEntity productCommentDetail(@PathVariable("product_id") int productId,
+                                               @PathVariable("comment_id") int commentId) throws JsonProcessingException {
+
+        ObjectMapper jsonData = new ObjectMapper();
+        Map<String, Object> data = new HashMap<>();
+
+        if (Objects.equals(data, null)) {
+            data = productService.errorMessage("content");
+            return new ResponseEntity(jsonData.writeValueAsString(data), HttpStatus.NOT_FOUND);
+
+        } else {
+            data = productService.detailComment(commentId);
+            return new ResponseEntity(jsonData.writeValueAsString(data), HttpStatus.OK);
+        }
+
+
+    }
+
+    //** 댓글 수정
+    @PatchMapping(value = "/api/product/{product_id}/comment/{comment_id}")
+    public ResponseEntity productCommentUpdate(@PathVariable("product_id") int productId,
+                                               @PathVariable("comment_id") int commentId,
+                                               @RequestBody(required = false) CommentDto commentDto) throws JsonProcessingException {
+        ObjectMapper jsonData = new ObjectMapper();
+        int userId = 1;
+        // 추후에 세션에서 가져올 거임
+        // userId =1 , orderId=41-45;
+        //commentDto 값이 존재하지 않을 경우 HTTP STATUS NOT_FOUND로 설정
+        if (Objects.equals(commentDto, null)) {
+            Map<String, Object> data = productService.errorMessage("content");
+            return new ResponseEntity(HttpStatus.NOT_FOUND);
+        } else {
+            // 댓글 수정
+            productService.updateComment(userId, commentId, commentDto);
+            return new ResponseEntity(HttpStatus.OK);
+        }
+    }
+
+    //** 댓글 삭제
+    @DeleteMapping(value = "/api/product/{product_id}/comment/{comment_id}")
+    public ResponseEntity productCartDelete(@PathVariable("product_id") int productId,
+                                            @PathVariable("comment_id") Integer commentId) throws JsonProcessingException {
+        ObjectMapper jsonData = new ObjectMapper();
+        int userId = 1; // 하드 코딩 추후에 세션에서 가져올 거임
+//         // userId =1 , orderId=41-45;
+//        orderId 값이 존재하지 않을 경우 HTTP STATUS NOT_FOUND로 설정
+        if (Objects.equals(commentId, 0)) {
+            Map<String, Object> data = productService.errorMessage("content");
+            return new ResponseEntity(jsonData.writeValueAsString(data), HttpStatus.NOT_FOUND);
+        } else {
+            // commentDto 삭제
+            productService.deleteComment(userId, commentId);
+            return new ResponseEntity(HttpStatus.OK);
+        }
+
+    }
+
+    //** 댓글 리스트 출력
+    @GetMapping(value = "/api/product/{product_id}/comment")
+    public ResponseEntity productCommentList(@PathVariable("product_id") int productId,
+                                             @RequestParam(value = "page", required = false, defaultValue = "1") int page,
+                                             @RequestParam(value = "size", required = false, defaultValue = "10") int size,
+                                             @RequestParam(value = "user_id", required = false) Integer userId)
+            throws JsonProcessingException {
+
+        ObjectMapper jsonData = new ObjectMapper();
+        Map<String, Object> data = new HashMap<>();
+
+        userId = 1; // 하드 코딩
+
+        // 댓글 목록이 반환되지 않는다면
+        if (Objects.equals(productService.listComment(productId, page, size, userId), null)) {
+            data = productService.errorMessage("content");
+            return new ResponseEntity(jsonData.writeValueAsString(data), HttpStatus.NOT_FOUND);
+        } else {
+            // Map 형식 데이터인 data를 JSON 방식으로 바꿔주는 것 : writeValuesAsString
+            data = productService.listComment(productId, page, size, userId);
+            return new ResponseEntity(jsonData.writeValueAsString(data), HttpStatus.OK);
+
+        }
+    }
+
+
+    // 추가해야 할 기능
+    //** Top rated 상품 3가지 가져오기
+    @GetMapping(value = "/api/product/top")
+    public ResponseEntity productListTopRated() throws JsonProcessingException {
+
+        ObjectMapper jsonData = new ObjectMapper();
+        Map<String, Object> data = new HashMap<>();
+
+
+        // 최고 평점 상품리스트가 존재하지 않으면
+        if (Objects.equals(productService.topRatedProductList(), null)) {
+            data = productService.errorMessage("content");
+            return new ResponseEntity(jsonData.writeValueAsString(data), HttpStatus.NOT_FOUND);
+        } else {
+            // Map 형식 데이터인 data를 JSON 방식으로 바꿔주는 것 : writeValuesAsString
+            data = productService.topRatedProductList();
+            return new ResponseEntity(jsonData.writeValueAsString(data), HttpStatus.OK);
+
+        }
+    }
+
+    // 카테고리 관련 상품 5가지 - random, categoryId
+    @GetMapping(value = "/api/product/{product_id}/category/{category_id}")
+    public ResponseEntity productListCategory(@PathVariable("product_id") int productId, @PathVariable("category_id") int categoryId)
+            throws JsonProcessingException {
+
+        ObjectMapper jsonData = new ObjectMapper();
+        Map<String, Object> data = new HashMap<>();
+
+        // 카테고리 관련 추천 상품이 존재하지 않는다면
+        if (Objects.equals(productService.categoryProductList(categoryId), null)) {
+            data = productService.errorMessage("content");
+            return new ResponseEntity(jsonData.writeValueAsString(data), HttpStatus.NOT_FOUND);
+        } else {
+            data = productService.categoryProductList(categoryId);
+            ;
+            return new ResponseEntity(jsonData.writeValueAsString(data), HttpStatus.OK);
+
+        }
+    }
+
+    // 상품 리뷰 개수 가져오기 count
+
+    @GetMapping(value = "/api/product/{product_id}/comment/count")
+    public ResponseEntity productCommentCount(@PathVariable("product_id") int productId) throws JsonProcessingException {
+
+        ObjectMapper jsonData = new ObjectMapper();
+        Map<String, Object> data = new HashMap<>();
+
+        // 댓글 목록이 반환되지 않는다면
+        if (Objects.equals(productService.countProductComment(productId), null)) {
+            data = productService.errorMessage("content");
+            return new ResponseEntity(jsonData.writeValueAsString(data), HttpStatus.NOT_FOUND);
+        } else {
+            // Map 형식 데이터인 data를 JSON 방식으로 바꿔주는 것 : writeValuesAsString
+            data = productService.countProductComment(productId);
+            return new ResponseEntity(jsonData.writeValueAsString(data), HttpStatus.OK);
+
+        }
+    }
+
+    //** 상품 개수 가져오기
+
+    @GetMapping(value = "/api/product/count")
+    public ResponseEntity productCommentList(@RequestParam(value = "categoryId", required = false, defaultValue = "0") int categoryId,
+                                             @RequestParam(value = "productName", required = false, defaultValue = "") String productName)
+            throws JsonProcessingException {
+
+        ObjectMapper jsonData = new ObjectMapper();
+        Map<String, Object> data = new HashMap<>();
+
+        // 댓글 목록이 반환되지 않는다면
+        if (Objects.equals(productService.countProduct(productName, categoryId), null)) {
+            data = productService.errorMessage("content");
+            return new ResponseEntity(jsonData.writeValueAsString(data), HttpStatus.NOT_FOUND);
+        } else {
+            // Map 형식 데이터인 data를 JSON 방식으로 바꿔주는 것 : writeValuesAsString
+            data = productService.countProduct(productName, categoryId);
+            return new ResponseEntity(jsonData.writeValueAsString(data), HttpStatus.OK);
+
+        }
+    }
 
 }

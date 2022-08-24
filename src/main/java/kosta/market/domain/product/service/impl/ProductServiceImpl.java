@@ -156,7 +156,7 @@ public class ProductServiceImpl implements ProductService {
         productDetail.put("productDescription", productDetailDto.getProductDescription());
         productDetail.put("productQuantity", productDetailDto.getProductQuantity());
         productDetail.put("categoryName", category.getCategoryName());
-
+        productDetail.put("categoryId", category.getCategoryId());
         data.put("data", productDetail);
 
         return data;
@@ -175,6 +175,8 @@ public class ProductServiceImpl implements ProductService {
             return null;
         }
     }
+
+    //** 상품 정보 수정
 
     @Override
     public boolean updateProduct(ProductDto productUpdateDto, MultipartFile imgFile) {
@@ -373,4 +375,267 @@ public class ProductServiceImpl implements ProductService {
 
         return data;
     }
+
+    //* 댓글 관련 기능
+
+    //** 댓글 생성
+    @Override
+    public boolean createComment(CommentDto commentDto) {
+
+        // 평점이 1~10 범위를 벗어난 경우 댓글 생성 불가
+        if (commentDto.getScore() < 1 || commentDto.getScore() > 10) {
+            return false;
+        }
+        // 주문완료 후 이미 작성한 댓글이 있는지 유무를 판별하는 기능
+        if (productMapper.selectDuplicateComment(commentDto.getOrderId()) == 1) {
+            return false;
+        } else {
+            // 댓글을 생성한다.
+            productMapper.insertComment(commentDto.getOrderId(), commentDto.getProductId(), commentDto.getScore(),
+                    commentDto.getContent());
+            return true;
+        }
+
+    }
+    //** 댓글 수정 전 자료 가져오기
+
+    @Override
+    public Map<String, Object> detailComment(int commentId) {
+
+        // commentId가 잘못된 값일 경우 null을 반환
+        if (productMapper.selectCountById(commentId) == 0) {
+            return null;
+        }
+
+        Map<String, Object> data = new HashMap<>();
+
+        Map<String, Object> comment = new HashMap<>();
+
+        comment.put("commentId", productMapper.selectComment(commentId).getCommentId());
+        comment.put("orderId", productMapper.selectComment(commentId).getOrderId());
+        comment.put("productId", productMapper.selectComment(commentId).getProductId());
+        comment.put("score", productMapper.selectComment(commentId).getScore());
+        comment.put("content", productMapper.selectComment(commentId).getContent());
+        data.put("data", comment);
+
+        return data;
+    }
+
+
+    //** 댓글 수정 기능
+
+    @Override
+    public boolean updateComment(int userId, int commentId, CommentDto commentDto) {
+
+
+        // 삭제된 댓글이라 수정할 수 없을 경우
+        if (Objects.equals(productMapper.selectComment(commentId), null)) {
+            return false;
+        }
+
+        // 평점이 1~10 범위를 벗어난 경우 업데이트 불가
+        if (commentDto.getScore() < 1 || commentDto.getScore() > 10) {
+            return false;
+        }
+
+        // orderId : 41~45
+        // 평점만 혹은 댓글만 수정하는 경우를 구분하기 위해 subquery로 조건을 나눈다.
+        String subquery = "";
+
+
+        // 평점 수정 시 commentDto의 score가 null이 아니면
+        if (!Objects.equals(commentDto.getScore(), null)) {
+            // 기존 평점과 다를 경우
+            if (!Objects.equals(commentDto.getScore(), productMapper.selectComment(commentId).getScore())) {
+                // 판매자 초기목록
+                subquery += " ,A.score=" + commentDto.getScore();
+            }
+        }
+        // 댓글 수정 시 commentDto의 score가 null이 아니면
+        if (!Objects.equals(commentDto.getContent(), null)) {
+            //기존 코멘트 내용과 다른 경우
+            if (!commentDto.getContent().equals(productMapper.selectComment(commentId).getContent())) {
+                subquery += " ,A.content='" + commentDto.getContent() + "'";
+            }
+        }
+
+        if (productMapper.updateComment(userId, commentDto.getOrderId(), subquery) == 0) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    // 댓글 삭제
+    @Override
+    public boolean deleteComment(int userId, Integer commentId) {
+
+        //제대로 삭제가 되어있지 않으면 false 반환
+        if (productMapper.deleteComment(userId, commentId) == 0) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    // 사용자가 작성한 댓글 목록 or 상품에 담긴 댓글 리스트 출력
+    @Override
+    public Map<String, Object> listComment(int productId, int page, int size, Integer userId) {
+
+
+        //
+        Map<String, Object> data = new HashMap<>();
+        //
+        List<Object> commentList = new ArrayList();
+
+
+        String subQuery = "";
+
+        //userId가 null 값이 아니면
+        if (!Objects.equals(userId, null)) {
+            subQuery += " AND D.user_id=" + userId;
+        }
+
+        // mapper 쪽에서 데이터 받아오기
+        ArrayList<CommentListDto> commentMapperList =
+                (ArrayList<CommentListDto>) productMapper.selectCommentList(productId, (page - 1) * size, size, subQuery);
+
+
+        for (int i = 0; i < commentMapperList.size(); i++) {
+            Map<String, Object> comment = new HashMap<>();
+            comment.put("commentId", commentMapperList.get(i).getCommentId());
+            comment.put("orderId", commentMapperList.get(i).getOrderId());
+            comment.put("productId", commentMapperList.get(i).getProductId());
+            comment.put("name", commentMapperList.get(i).getName());
+            comment.put("score", commentMapperList.get(i).getScore());
+            comment.put("content", commentMapperList.get(i).getContent());
+            comment.put("createdAt", commentMapperList.get(i).getCreatedAt());
+            commentList.add(comment);
+        }
+        data.put("data", commentList);
+
+        return data;
+    }
+
+    //** 상품에 달린 댓글 개수 반환
+    @Override
+    public Map<String, Object> countProductComment(int productId) {
+        Map<String, Object> data = new HashMap<>();
+        Map<String, Object> count = new HashMap<>();
+        count.put("count", productMapper.selectCommentCountByproductId(productId));
+        // 상품에 등록된 댓글이 없을 경우
+        if (Objects.equals(count.get("count"),null)) {
+            return null;
+        } else {
+            data.put("data", count);
+            return data;
+        }
+    }
+
+    //** 카테고리에 관련한 추천 상품 리스트
+    @Override
+    public Map<String, Object> categoryProductList(int categoryId) {
+
+        if (categoryId == 0) {
+            return null;
+        }
+        Map<String, Object> data = new HashMap<>();
+        List<Object> productList = new ArrayList();
+        ArrayList<ProductDto> productMapperList =
+                (ArrayList<ProductDto>) productMapper.selectProductByCategoryId(categoryId);
+        //category 값이 존재하면
+
+        for (int i = 0; i < productMapperList.size(); i++) {
+            Map<String, Object> product = new HashMap<>();
+            product.put("productId", productMapperList.get(i).getProductId());
+            product.put("productName", productMapperList.get(i).getProductName());
+            product.put("productPrice", productMapperList.get(i).getProductPrice());
+            product.put("productImgFileName", productMapperList.get(i).getProductImgFileName());
+            product.put("productImgPath", productMapperList.get(i).getProductImgPath());
+            productList.add(product);
+        }
+        data.put("data", productList);
+
+        return data;
+    }
+
+    //** 평점별 추천 상품 리스트
+    @Override
+    public Map<String, Object> topRatedProductList() {
+        Map<String, Object> data = new HashMap<>();
+        List<Object> productList = new ArrayList();
+        ArrayList<ProductTopRatedDto> productMapperList =
+                (ArrayList<ProductTopRatedDto>) productMapper.selectProductByTopScore();
+
+        if (Objects.equals(productMapperList, null)) {
+            return null;
+        }
+
+        for (int i = 0; i < productMapperList.size(); i++) {
+            Map<String, Object> product = new HashMap<>();
+            product.put("score", productMapperList.get(i).getScore());
+            product.put("productId", productMapperList.get(i).getProductId());
+            product.put("productName", productMapperList.get(i).getProductName());
+            product.put("productPrice", productMapperList.get(i).getProductPrice());
+            product.put("productImgFileName", productMapperList.get(i).getProductImgFileName());
+            product.put("productImgPath", productMapperList.get(i).getProductImgPath());
+            productList.add(product);
+        }
+
+        data.put("data", productList);
+
+        return data;
+    }
+
+    //** 상품 개수 반환
+    @Override
+    public Map<String, Object> countProduct(String productName, int categoryId) {
+
+        Map<String, Object> data = new HashMap<>();
+        Map<String,Object> productCount = new HashMap<>();
+        String subQuery="";
+
+        // categoryId 값이 존재하지 않는 경우
+        if (categoryId == 0) {
+            return null;
+        } else{
+            subQuery +="AND B.category_id="+categoryId+" ";
+
+        }
+        // 상품명이 존재하지 않는 경우
+        if (Objects.equals(productName, null)){
+            return null;
+        } else {
+            if(!productName.equals("")){
+                subQuery += "AND A.product_name LIKE '%"+productName+"%'";
+            }
+
+        }
+        //값이 존재하지 않으면
+        if(Objects.equals(productMapper.selectProductCount(subQuery),null)){
+            return null;
+        } else {
+            productCount.put("count", productMapper.selectProductCount(subQuery));
+            data.put("data", productCount);
+            return data;
+        }
+    }
+
+    // error 메서지 처리
+    //** 에러 메시지 종류애 따라 처리
+    @Override
+    public Map<String, Object> errorMessage(String error) {
+        Map<String, Object> data = new HashMap<>();
+        Map<String, Object> message = new HashMap<>();
+
+        if (error.equals("file")) {
+            message.put("message", "FileNotFound");
+        } else if (error.equals("content")) {
+            message.put("message", "ContentNotFound");
+        }
+        data.put("data", message);
+
+        return data;
+    }
+
 }
