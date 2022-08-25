@@ -10,10 +10,9 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class SellerDto {
-
-    private Integer user_id;
-    private Integer seller_id;
-    private String business_reg_no;
+    private Integer userId;
+    private Integer sellerId;
+    private String businessRegNo;
 
 
 }

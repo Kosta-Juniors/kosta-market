@@ -1,6 +1,7 @@
 package kosta.market.domain.user.service.impl;
 
-import javax.servlet.http.HttpServletRequest;
+import java.util.List;
+import java.util.Objects;
 import javax.servlet.http.HttpSession;
 import kosta.market.domain.user.model.AddressDto;
 import kosta.market.domain.user.model.SellerDto;
@@ -32,11 +33,13 @@ public class UserServiceImpl implements UserService {
     @Override
     public boolean loginUser(UserCheckDto userCheckDto, HttpSession session) {
 
-        User user = userMapper.selectUserByUsernameAndPassword(userCheckDto.getUsername(), userCheckDto.getPassword());
+        User user = userMapper.selectUserByUsernameAndPassword(userCheckDto.getUsername(),
+            userCheckDto.getPassword());
         if (user != null && userCheckDto.getPassword().equals(user.getPassword())) {
-            session.setAttribute("user_id", user.getUser_id());
-            if ( userMapper.selectJoinUserByUsernameAndPassword(userCheckDto.getUsername(), userCheckDto.getPassword()) != null) {
-                session.setAttribute("seller_id", user.getSeller_id());
+            session.setAttribute("userId", user.getUserId());
+            if (userMapper.selectJoinUserByUsernameAndPassword(userCheckDto.getUsername(),
+                userCheckDto.getPassword()) != null) {
+                session.setAttribute("sellerId", user.getSellerId());
             }
             return true;
         } else {
@@ -52,9 +55,10 @@ public class UserServiceImpl implements UserService {
     @Override
     public boolean modifyUser(User user) {
 
-        User userModify = userMapper.selectUserByUserId(user.getUser_id());
+        User userModify = userMapper.selectUserByUserId(user.getUserId());
         if (userModify != null) {
-            userMapper.updateUser(userModify.getUser_id(), userModify.getPassword(), userModify.getContact());
+            userMapper.updateUser(userModify.getUserId(), userModify.getPassword(),
+                userModify.getContact());
             return true;
         } else {
             return false;
@@ -64,12 +68,12 @@ public class UserServiceImpl implements UserService {
     @Override
     public boolean removeUser(UserCheckDto userCheckDto, HttpSession session) {
 
-        Integer userId = (Integer) session.getAttribute("user_id");
+        Integer userId = (Integer) session.getAttribute("userId");
         User user = userMapper.selectUserByPassword(userCheckDto.getPassword());
 
         if (user != null && userCheckDto.getPassword().equals(user.getPassword())) {
             userMapper.deleteUser(userId);
-            session.removeAttribute("user_id");
+            session.removeAttribute("userId");
             return true;
         }
         return false;
@@ -78,30 +82,35 @@ public class UserServiceImpl implements UserService {
     @Override
     public boolean addAddress(AddressDto addressDto, HttpSession session) {
 
-        Integer userId = (Integer) session.getAttribute("user_id");
-        userMapper.selectAddressByUserId(userId);
+        Integer userId = (Integer) session.getAttribute("userId");
 
-        if (addressDto.getDelivery_place() != null) {
-            userMapper.updateAddress(addressDto.getUser_id());
-            userMapper.insertAddress(addressDto.getUser_id(), addressDto.getDelivery_place());
+
+        if (addressDto.getDeliveryPlace() != null) {
+            userMapper.updateAddress(addressDto.getUserId());
+            userMapper.insertAddress(addressDto.getUserId(), addressDto.getDeliveryPlace(),
+                addressDto.getTitle(), addressDto.getRecipient(), addressDto.getContact());
             return true;
         }
         return false;
     }
 
     @Override
-    public AddressDto addressInfo(Integer userId) {
-        return userMapper.selectAddressByUserId(userId);
+    public List<AddressDto> addressInfo(Integer userId) {
+        return userMapper.selectListAddressByUserId(userId);
     }
 
     @Override
-    public boolean removeAddress(AddressDto addressDto, HttpSession session) {
+    public boolean removeAddress(Integer addressId, HttpSession session) {
 
-        Integer userId = (Integer) session.getAttribute("user_id");
-        userMapper.selectAddressByUserId(userId);
+        if (Objects.equals(addressId, null)) {
+            return false;
+        }
 
-        if (addressDto != null) {
-            userMapper.deleteAddress(addressDto.getAddress_id());
+        Integer userId = (Integer) session.getAttribute("userId");
+        AddressDto addressInfo = userMapper.selectAddressById(userId, addressId);
+
+        if (addressInfo != null ) { // addressInfo.getAddressId().equals(addressId)
+            userMapper.deleteAddress(addressId);
             return true;
         }
         return false;
@@ -110,12 +119,12 @@ public class UserServiceImpl implements UserService {
     @Override
     public boolean addSeller(SellerDto sellerDto, HttpSession session) {
 
-        Integer userId = (Integer) session.getAttribute("user_id");
+        Integer userId = (Integer) session.getAttribute("userId");
         userMapper.selectSellerByUserId(userId);
 
-        if (sellerDto.getBusiness_reg_no() != null) {
-            session.setAttribute("seller_id", sellerDto.getSeller_id());
-            userMapper.insertSeller(sellerDto.getUser_id(), sellerDto.getBusiness_reg_no());
+        if (sellerDto.getBusinessRegNo() != null) {
+            session.setAttribute("sellerId", sellerDto.getSellerId());
+            userMapper.insertSeller(sellerDto.getUserId(), sellerDto.getBusinessRegNo());
             return true;
         } else {
             return false;
@@ -129,11 +138,11 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public boolean removeSeller(SellerDto sellerDto, HttpSession session) {
-        Object userId = session.getAttribute("user_id");
+        Object userId = session.getAttribute("userId");
         SellerDto seller = userMapper.selectSellerByUserId(userId);
         if (userId != null) {
-            userMapper.deleteSeller(seller.getSeller_id());
-            session.removeAttribute("seller_id");
+            userMapper.deleteSeller(seller.getSellerId());
+            session.removeAttribute("sellerId");
             return true;
         }
         return false;

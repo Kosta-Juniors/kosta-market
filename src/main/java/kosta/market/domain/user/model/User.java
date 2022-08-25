@@ -12,16 +12,15 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class User {
-
-	private Integer user_id;
+	private Integer userId;
 	private String username;
 	private String password;
 	private String name;
 	private String contact;
-	private Integer seller_id;
+	private Integer sellerId;
 
-	public User(Integer user_id, String username, String password, String name, String contact) {
-		this.user_id = user_id;
+	public User(Integer userId, String username, String password, String name, String contact) {
+		this.userId = userId;
 		this.username = username;
 		this.password = password;
 		this.name = name;

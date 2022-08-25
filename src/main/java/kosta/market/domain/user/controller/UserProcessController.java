@@ -1,9 +1,13 @@
 package kosta.market.domain.user.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import kosta.market.domain.user.model.AddressCheckDto;
 import kosta.market.domain.user.model.AddressDto;
 import kosta.market.domain.user.model.SellerDto;
 import kosta.market.domain.user.model.User;
@@ -46,7 +50,7 @@ public class UserProcessController {
     @ResponseBody
     public ResponseEntity getUserInfo(HttpSession session) {
 
-        Integer userId = (Integer) session.getAttribute("user_id");
+        Integer userId = (Integer) session.getAttribute("userId");
         Object userInfo = userService.userInfo(userId);
 
         Map<String, Object> map = new HashMap<>();
@@ -107,21 +111,33 @@ public class UserProcessController {
     @ResponseBody
     public ResponseEntity getAddressInfo(HttpSession session) {
 
-        Integer userId = (Integer) session.getAttribute("user_id");
-        Object addressInfo = userService.addressInfo(userId);
+        Integer userId = (Integer) session.getAttribute("userId");
 
+        List<Object> addressList = new ArrayList();
+        ArrayList<AddressDto> addressArrayList = (ArrayList<AddressDto>)userService.addressInfo(userId);
+        for(int i=0; i <addressArrayList.size(); i++) {
+            Map<String, Object> address = new HashMap<>();
+            address.put("addressId",addressArrayList.get(i).getAddressId());
+            address.put("userId",addressArrayList.get(i).getUserId() );
+            address.put("deliveryPlace",addressArrayList.get(i).getDeliveryPlace() );
+            address.put("isDefaultAddress",addressArrayList.get(i).getIsDefaultAddress() );
+            address.put("title",addressArrayList.get(i).getTitle() );
+            address.put("recipient",addressArrayList.get(i).getRecipient() );
+            address.put("contact",addressArrayList.get(i).getContact() );
+            addressList.add(address);
+        }
         Map<String, Object> map = new HashMap<>();
-        map.put("data", addressInfo);
+        map.put("data", addressList);
 
         return new ResponseEntity(map, HttpStatus.OK);
     }
 
     @DeleteMapping(value = "/api/user/address")
     @ResponseBody
-    public ResponseEntity addressDelete(@RequestBody AddressDto addressDto,
-        HttpSession session) {
+    public ResponseEntity addressDelete(@RequestBody AddressCheckDto addressCheckDto, HttpSession session)
+        throws JsonProcessingException {
 
-        boolean removeAddress = userService.removeAddress(addressDto, session);
+        boolean removeAddress = userService.removeAddress(addressCheckDto.getAddressId(), session);
 
         if (removeAddress) {
             return new ResponseEntity(HttpStatus.OK);
@@ -145,8 +161,6 @@ public class UserProcessController {
     @ResponseBody
     public ResponseEntity sellerDelete(@RequestBody SellerDto sellerDto, HttpSession session) {
 
-        Integer userId = (Integer) session.getAttribute("user_id");
-        userService.sellerInfo(userId);
         boolean removeSeller = userService.removeSeller(sellerDto, session);
 
         if (removeSeller) {

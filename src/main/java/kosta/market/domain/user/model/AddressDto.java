@@ -11,9 +11,11 @@ import lombok.Setter;
 @AllArgsConstructor
 public class
 AddressDto {
-
-    private Integer address_id;
-    private Integer user_id;
-    private String delivery_place;
-    private String is_default_address;
+    private Integer addressId;
+    private Integer userId;
+    private String deliveryPlace;
+    private String isDefaultAddress;
+    private String title;
+    private String recipient;
+    private String contact;
 }

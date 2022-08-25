@@ -1,7 +1,9 @@
 package kosta.market.domain.user.service;
 
+import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import kosta.market.domain.user.model.AddressCheckDto;
 import kosta.market.domain.user.model.AddressDto;
 import kosta.market.domain.user.model.SellerDto;
 import kosta.market.domain.user.model.User;
@@ -72,17 +74,15 @@ public interface UserService {
 	 * @param userId userId를 통해 AddressDto 검색
 	 * @return
 	 */
-	AddressDto addressInfo(Integer userId);
+	List<AddressDto> addressInfo(Integer userId);
 
 	/**
-	 * 기능 : 배송지 삭제
-	 * @param addressDto
-	 * @param session 세션을 통해 key값에 저장된 user_id를 가져옴
-	 *                user_id를 통해 addressDto 값들을 가져오고
-	 *                addressDto의 address_id를 삭제
-	 * @return 배송지 삭제가 성공하면 true, 실패하면 false
+	 *
+	 * @param addressId addressId를 통해 가장 오래된 배송지 삭제
+	 * @param session 세션을 통해 userId 가져옴
+	 * @return
 	 */
-	boolean removeAddress(AddressDto addressDto, HttpSession session);
+	boolean removeAddress(Integer addressId, HttpSession session);
 
 	/**
 	 * 기능 : 판매자 등록
