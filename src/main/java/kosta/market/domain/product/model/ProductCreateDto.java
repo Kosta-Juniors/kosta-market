@@ -9,15 +9,15 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
-@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
+
 public class ProductCreateDto {
 
     private String productName;
-    private int productPrice;
+    private Integer productPrice;
     private String productImgFileName;
     private String productImgPath;
     private String productDescription;
-    private int productQuantity;
-    private int categoryId;
+    private Integer productQuantity;
+    private Integer categoryId;
 
 }

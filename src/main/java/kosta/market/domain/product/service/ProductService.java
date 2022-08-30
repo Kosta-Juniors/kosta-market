@@ -42,19 +42,19 @@ public interface ProductService {
      * @Param userType 판매자인지 유저인지 구분하는 변수
      * @Param categoryId 카테고리 번호
      * @Param productName 검색할 상품명
-     * @return 등록한 상품이 있다면 Map<String,Object>;, 아니면 null
+     * @return 등록한 상품이 있다면 List;, 아니면 null
 
      **/
-    Map<String, Object> listProduct(String userType, int categoryId, String productName);
+    List<ProductDto> listProduct(String userType, Integer categoryId, String productName);
 
     /**
      * 기능 : 상품 상세정보 <br>
      * 설명 : 상품번호를 받아 해당 상품의 모든 정보를 조회한다. <br>
      *
      * @param productId 상품 테이블의 상품번호
-     * @return 상품 정보가 있다면 Object, 아니면 null
+     * @return 상품 정보가 있다면 ProductDto, 아니면 null
      */
-    Map<String, Object> detailProduct(int productId);
+    ProductDto detailProduct(Integer productId);
 
     /**
      * 기능 : 상품 수정 <br>
@@ -74,15 +74,15 @@ public interface ProductService {
      * @param productId 상품번호
      * @return 상품이 삭제되었다면 true, 아니면 false
      */
-    boolean deleteProduct(int productId);
+    boolean deleteProduct(Integer productId);
 
     /**
      * 기능 : 카테고리 리스트 가져오기 <br>
      * 설명 : 상품 등록 시 필요한 카테고리 목록을 미리 받아온다. <br>
      *
-     * @return 카테고리 리스트가 존재하면 Map<String,Object>;, 아니면 null
+     * @return 카테고리 리스트가 존재하면 List;, 아니면 null
      */
-    Map<String, Object> listCategory();
+   List<Category> listCategory();
 
     /**
      * 기능 : 등록상품 카테고리 목록 가져오기 <br>
@@ -91,7 +91,7 @@ public interface ProductService {
      * @return 카테고리 값이 존재하면 Object&gt;, 아니면 null
      * @Param productId 상품번호
      */
-    Category detailCategory(int productId);
+    Category detailCategory(Integer productId);
 
 
     /**
@@ -155,7 +155,7 @@ public interface ProductService {
      * @param productId 상품식별번호
      * @return 장바구니를 성공적으로 삭제했다면 true, 아니면 false
      */
-    boolean deleteCart(int userId, int productId);
+    boolean deleteCart(Integer userId, Integer productId);
 
     /**
      * 기능 : 장바구니 리스트 출력 <br>
@@ -163,9 +163,9 @@ public interface ProductService {
      * 사용자식별번호(userId)를 입력받아 사용자의 장바구니 목록을 가지고 온다. <br>
      *
      * @param userId 장바구니 리스트를 불러오기 위한 사용자 식별 번호
-     * @return 장바구니 리스트 값이 존재하면 Object&gt;, 아니면 null
+     * @return 장바구니 리스트 값이 존재하면 List&gt;, 아니면 null
      */
-    Map<String, Object> listCart(int userId);
+    List<CartListDto> listCart(Integer userId);
 
 
     // 댓글 관련 기능
@@ -188,7 +188,7 @@ public interface ProductService {
      * @return 댓글 내용이 존재하면 Object&gt;, 아니면 null
      * @Param commentId 댓글 작성자 본인인지 확인하기 위해 필요한 데이터
      */
-    Map<String, Object> detailComment(int commentId);
+    CommentDto detailComment(Integer commentId);
 
     /**
      * 기능 : 댓글 수정 <br>
@@ -200,7 +200,7 @@ public interface ProductService {
      * @Param userId 댓글 작성자 본인인지 확인하기 위해 필요한 데이터
      * @Param commentId 댓글 식별 번호
      */
-    boolean updateComment(int userId, int commentId, CommentDto commentDto);
+    boolean updateComment(Integer userId, Integer commentId, CommentDto commentDto);
 
 
     /**
@@ -212,7 +212,7 @@ public interface ProductService {
      * @param commentId 댓글 식별 번호
      * @return 댓글을 성공적으로 삭제했다면 true, 아니면 false
      */
-    boolean deleteComment(int userId, Integer commentId);
+    boolean deleteComment(Integer userId, Integer commentId);
 
     /**
      * 기능 : 상품 댓글 리스트 <br>
@@ -225,7 +225,7 @@ public interface ProductService {
      * @param userId    장바구니 리스트를 불러오기 위한 사용자 식별 번호
      * @return 상품 관련 댓글 목록이 존재하면 Object&gt;, 아니면 null
      */
-    Map<String, Object> listComment(int productId, int page, int size, Integer userId);
+    List<CommentListDto> listComment(Integer productId, Integer page, Integer size, Integer userId);
 
     /**
      * 기능 : 상품별 댓글 개수 <br>
@@ -233,9 +233,9 @@ public interface ProductService {
      * 상품식별번호(productId)를 입력받아 상품별 댓글 갯수를 반환한다. <br>
      *
      * @param productId 상품식별번호
-     * @return 상품 관련 댓글이 존재하면 댓글 개수가 포함된 Object&gt;, 아니면 null
+     * @return 상품 관련 댓글이 존재하면 댓글 개수를 반환(Integer);, 아니면 null
      */
-    public Map<String, Object> countProductComment(int productId);
+    Integer countProductComment(Integer productId);
 
     /**
      * 기능 : 카테고리별 추천 상품 <br>
@@ -243,9 +243,9 @@ public interface ProductService {
      * 카테고리식별번호(categoryId)를 입력받아 카테고리 관련 추천 상품 5개 정보를 반환한다. <br>
      *
      * @param categoryId 상품식별번호
-     * @return 해당 카테고리에 관련 있는 상품이 존재하면 상품 리스트가 담긴 Object&gt;, 아니면 null
+     * @return 해당 카테고리에 관련 있는 상품이 존재하면 상품 리스트가 담긴 List&gt;, 아니면 null
      */
-    public Map<String, Object> categoryProductList(int categoryId);
+    List<ProductDto> categoryProductList(Integer categoryId);
 
     /**
      * 기능 : 평균평전별 추천 상품 <br>
@@ -253,9 +253,9 @@ public interface ProductService {
      * 평균펼점이 가장 높은 상품 3개 정보를 반환한다. <br>
      * *
      *
-     * @return 평균 평점이 가장 높은 상품 3개가 존재하면 상품 리스트가 담긴 Object&gt;, 아니면 null
+     * @return 평균 평점이 가장 높은 상품 3개가 존재하면 상품 리스트가 담긴 List&gt;, 아니면 null
      */
-    public Map<String, Object> topRatedProductList();
+    List<ProductTopRatedDto> topRatedProductList();
 
     /**
      * 기능 : 상품 개수 조회 <br>
@@ -266,7 +266,7 @@ public interface ProductService {
      * @param categoryId 상품식별번호
      * @return 해당 상품명 혹은 카테고리에 관련 있는 상품이 존재하면 상품 개수가 담긴 Object&gt;, 아니면 null
      */
-    public Map<String, Object> countProduct(String productName, int categoryId);
+    Integer countProduct(String productName, Integer categoryId);
 
 
     /**
@@ -275,9 +275,9 @@ public interface ProductService {
      * 에러 메세지를 반환한다. <br>
      *
      * @param error 에러메시지 종류
-     * @return 에러 발생 시 Object&gt;, 아니면 null
+     * @return 에러 발생 시 String;, 아니면 null
      */
-    public Map<String, Object> errorMessage(String error);
+    String errorMessage(String error);
 
 
 }

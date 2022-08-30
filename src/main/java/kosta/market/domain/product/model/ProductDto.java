@@ -10,15 +10,20 @@ import org.springframework.web.multipart.MultipartFile;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
-@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
+
 // 상품상세보기 및 상품수정에 필요한 정보
+// 상품리스트를 받아올 때 사용
+
 public class ProductDto {
 
-    private int productId; //상품식별번호
+    private Integer productId; //상품식별번호
     private String productName; // 상품명
-    private int productPrice; // 상품가격
-    private String productImgFileName; //상품이미지파일명
-    private String productImgPath; // 상품이미지저장경로
-    private String productDescription; // 상품상세설명
-    private int productQuantity; //재고수량
+    private Integer productPrice; // 상품가격
+
+    //user용
+    private String productDescription; // 상품상세 설명
+    private String productImgFileName; // 이미지 파일 이름
+    private String productImgPath; // 이미지 파일 경로
+
+    private Integer productQuantity; // 구매 가능여부용
 }
