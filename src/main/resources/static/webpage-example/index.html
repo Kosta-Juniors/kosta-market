@@ -1,0 +1,209 @@
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <!-- CSS only -->
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" crossorigin="anonymous">
+         <!-- FontAwesome-->
+         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.2/css/all.min.css" integrity="sha512-1sCRPdkRXhBV2PBLUdRb4tMg1w2YPf37qatUFeS7zlBy7jJI8Lf4VHwWfZZfpXtYSLy85pkm9GaYVYMfw5BC1A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    </head>
+
+
+    <body class="bg-secondary">
+        <!-- NAVGATION 시작-->
+        <header class="container fixed-top mx-3 px-0">
+            <!-- 메인 네비게이션 바 시작-->
+            <nav class="navbar navbar-expand-lg navbar-light bg-light">
+                <div class="container-fluid">
+                    <a class="navbar-brand" href="#">K-Star Mall</a>
+                    <div class="d-flex flex-row-reverse">
+                        <input type="text" placeholder="Search" aria-label="Search" id="search">
+                    </div>
+                </div>
+            </nav>
+            <!-- 메인 네비게이션바 끝-->
+
+            <!-- 서브 네비게이션바(카테고리) 시작-->
+            <nav class="bg-light">
+                <ul class="nav" id="categoryList">
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" href="#">홈</a>
+                    </li>
+                </ul>
+            </nav>
+            <!-- 서브 네비게이션바(카테고리) 끝-->
+        </header>
+        <!-- NAVGATION 끝-->
+
+
+        
+        <main class="container px-0" style="padding-top: 110px;">
+            <!-- 시간 따라 바뀌는 배너 시작 -->
+            <section style="height:350px">
+                <div id="carouselExampleInterval" class="carousel slide" data-bs-ride="carousel">
+                    <div class="carousel-inner">
+                      <div class="carousel-item active" data-bs-interval="10000">
+                        <img src="https://g-selected.pstatic.net/MjAyMjA4MDJfMTc3/MDAxNjU5NDE1NTM0MTU1.tvdN63VK3ktSltREnDJwBfeLOuMV18udqO_ZxMKz8Pgg.zZkF9QsUCS17vPdT1xO3kBX4RtfKc4TYbUymNJrJUxYg.JPEG/live_up1.jpg?type=f1125_480_q85"
+                         class="img-responsive" alt="...">
+                      </div>
+                      <div class="carousel-item" data-bs-interval="2000">
+                        <img src="" 
+                         class="img-fluid d-block w-100" alt="...">
+                      </div>
+                      <div class="carousel-item">
+                        <img src=""
+                         class="img-fluid d-block w-100" alt="...">
+                      </div>
+                    </div>
+                    <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleInterval" data-bs-slide="prev">
+                      <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                      <span class="visually-hidden">Previous</span>
+                    </button>
+                    <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleInterval" data-bs-slide="next">
+                      <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                      <span class="visually-hidden">Next</span>
+                    </button>
+                </div>
+            </section>
+            <!-- 시간 따라 바뀌는 배너 끝 -->
+
+
+            <section class="container px-0 py-3 border border-1 border-dark" id="productList">
+            </section>
+
+        </main>
+        
+
+        <div class="container bg-light px-0">
+            <footer class="py-3 mt-4">
+              <ul class="nav justify-content-center border-bottom pb-3 mb-3">
+                <li class="nav-item"><a href="#" class="nav-link px-2 text-muted">Home</a></li>
+                <li class="nav-item"><a href="#" class="nav-link px-2 text-muted">Features</a></li>
+                <li class="nav-item"><a href="#" class="nav-link px-2 text-muted">Pricing</a></li>
+                <li class="nav-item"><a href="#" class="nav-link px-2 text-muted">FAQs</a></li>
+                <li class="nav-item"><a href="#" class="nav-link px-2 text-muted">About</a></li>
+              </ul>
+              <p class="text-center text-muted">© 2022 Company, Inc</p>
+            </footer>
+          </div>
+
+        <!-- Footer 시작
+        <footer class="pb-5">
+            <section>
+                <div class="row px-5 py-3">
+                    <strong class="col">법적고지</strong>
+                    <a href="" class="col text-end">자세히보기</a>
+                </div>
+                <p class="px-5 py-3"> 코스타마켓㈜은 통신판매중개자이며, 통신판매의 당사자가 아닙니다. 상품, 상품정보, 거래에 관한 의무와 책임은 판매자에게 있습니다. </p>
+            </section>
+
+            <section></section>
+        </footer>
+         Footer 끝-->
+    </body>
+
+    <!-- JQuery 3.6.0-->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <!-- JavaScript Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" crossorigin="anonymous"></script>
+    <!-- FontAwesome-->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.2/js/all.min.js" integrity="sha512-8pHNiqTlsrRjVD4A/3va++W1sMbUHwWxxRPWNyVlql3T+Hgfd81Qc6FC5WMXDC+tSauxxzp1tgiAvSKFu1qIlA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+    <script>
+        const SERVER_URL = "http://127.0.0.1";
+
+        $("#search").keydown(function(e) {
+            if (e.keyCode === 13) {
+                const searchQuery = $("#search").val()
+                window.location.pathname = "/search?q=" + searchQuery
+            }
+        })
+
+        const getCategoryList = function(){
+            return new Promise((resolve, reject) => {
+                $.get(SERVER_URL+"/api/category", function() {
+                    console.log("Req GET CategoryList" );
+                })
+                .done((response) => {
+                    const jsonData = JSON.parse(response).data;
+                    resolve(jsonData)
+                    console.log("ok", jsonData)
+                })
+                .fail(function() {
+                    console.log("cate load failed")
+                })
+            })
+        }
+        
+
+        const getTop10ProductsByCategoryId = function(categoryId){
+            return new Promise((resolve, reject) => {
+                $.get(SERVER_URL+"/api/product?categoryId="+categoryId, function() {
+                    console.log("카테고리별 아이템 가져오기! >> " + categoryId)
+                }).done((response) => {
+                    const jsonData = JSON.parse(response).data;
+                    resolve(jsonData)
+                    console.log("top10get!")
+                }).fail((response) => {
+                    const jsonData = [1, 2];
+                    resolve([1, 2]);
+                });
+            })
+        }
+
+        async function init(){
+            const categoryList = await getCategoryList();
+            console.log(categoryList,"DSADSA");
+
+            // 상단 카테고리명 추가해주는 코드
+            categoryList.forEach(category => {
+                $("#categoryList").append(
+                    '<li class=\"nav-item\">' +
+                    '<a class=\"nav-link\" href=\"/product?categoryId=' + category.categoryId + '\">' + category.categoryName + '</a>' +
+                    '</li>'
+                )
+                $("#productList").append(
+                    '<div id=' + category.categoryName + '>'
+                )
+            });
+            
+            console.log("응답된 데이터 : response >> " + categoryList);
+
+            // 카테고리별 아이템 추가
+            categoryList.forEach(category => {
+                    console.log(category)
+                    console.log(category.categoryName)
+                    $("#"+category.categoryName).append(
+                        "<div class=\"px-2\">" + 
+                            "<div class=\"py-5 border border-1 border-danger\">" +
+                                "<div class=\"row\">" + 
+                                    "<div class=\"col\">" +
+                                        "<h5>" + category.categoryName + "</h5>" + "더보기" +
+                                    "</div>" +
+                                "</div>" +
+                                "<div class=\"row\" id=\"" + category.categoryName + "-items\"></div>" +
+                            "</div>" +
+                        "</div>"
+                    )
+                    getTop10ProductsByCategoryId(category.categoryId)
+                    .then(productList => {
+                        productList.forEach(product => {
+                            $("#"+category.categoryName+"-items").append(                                
+                                "<div class=\"col\">" +
+                                    "<a href=\"/product/" + product.productId + "\">" +
+                                    "<h5>" + product.productName + "</h5>" +
+                                    product.productPrice +
+                                    "</a>" +
+                                "</div>"
+                            )
+                        })
+                    })
+                })
+        };
+        
+        init();
+
+        // 모든 카테고리를 가져온다.
+        // 성공시 카테고리별 상위 10개의 데이터를 가져온다.
+    </script>
+</html>
