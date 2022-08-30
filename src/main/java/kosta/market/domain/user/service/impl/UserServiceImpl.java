@@ -62,9 +62,9 @@ public class UserServiceImpl implements UserService {
 
         Integer userId = (Integer) session.getAttribute("userId");
         User userModify = userMapper.selectUserByUserId(userId);
-
         if (userModify != null) {
-            userMapper.updateUser(user.getUserId(), user.getPassword(), user.getContact());
+            userMapper.updateUser(user.getUserId(), user.getPassword(),
+                user.getContact());
             return true;
         } else {
             return false;
@@ -91,7 +91,7 @@ public class UserServiceImpl implements UserService {
         if (addressDto.getDeliveryPlace() != null) {
             userMapper.updateAddress(addressDto.getUserId());
             userMapper.insertAddress(addressDto.getUserId(), addressDto.getDeliveryPlace(),
-                addressDto.getTitle(), addressDto.getContact(), addressDto.getRecipient());
+                addressDto.getTitle(), addressDto.getContact(), addressDto.getRecipient() );
             return true;
         }
         return false;
@@ -121,7 +121,6 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public boolean addSeller(SellerDto sellerDto, HttpSession session) {
-
         if (sellerDto.getBusinessRegNo() != null) {
             session.setAttribute("sellerId", sellerDto.getSellerId());
             userMapper.insertSeller(sellerDto.getUserId(), sellerDto.getBusinessRegNo());

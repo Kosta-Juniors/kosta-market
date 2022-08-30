@@ -2,14 +2,11 @@ package kosta.market.domain.user.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Getter
 @Setter
-@NoArgsConstructor
+@Getter
 @AllArgsConstructor
-public class UserCheckDto {
-    private String username;
-    private String password;
+public class SellerCheckDto {
+    private Integer sellerId;
 }
