@@ -39,7 +39,7 @@ public class ProductServiceImpl implements ProductService {
 
         // 파일 이미지가 없을 경우
         // 변수 자체가 존재하는지를 체크
-        if (Objects.equals(imgFile, null)) {
+        if (!Objects.equals(imgFile, null)) {
             // 파일이 있는지 체크
             if (!imgFile.isEmpty()) {
                 fileName = saveImg(imgFile);
@@ -50,49 +50,45 @@ public class ProductServiceImpl implements ProductService {
         productCreateDto.setProductImgFileName(fileName);
         productCreateDto.setProductImgPath(basePath);
 
-        //입력된 정보 삽입
-        //productAddDto에 저장된 상품명이 null 값이 아니라면
-        if (productCreateDto.getProductName() != null) {
+        if(!Objects.equals(productCreateDto.getCategoryId(),null)) {
+            //입력된 정보 삽입
+            //productAddDto에 저장된 상품명이 null 값이 아니라면
+            if (productCreateDto.getProductName() != null) {
 
-            // TBL_PRODUCT DB에 상품내용 저장
-            productMapper.insertProduct(productCreateDto.getProductName(),
-                    productCreateDto.getProductPrice(),
-                    productCreateDto.getProductImgFileName(),
-                    productCreateDto.getProductImgPath(),
-                    productCreateDto.getProductDescription(),
-                    productCreateDto.getProductQuantity());
+                // TBL_PRODUCT DB에 상품내용 저장
+                productMapper.insertProduct(productCreateDto.getProductName(),
+                        productCreateDto.getProductPrice(),
+                        productCreateDto.getProductImgFileName(),
+                        productCreateDto.getProductImgPath(),
+                        productCreateDto.getProductDescription(),
+                        productCreateDto.getProductQuantity());
 
 
-            // TBL_PRODUCT 에 상품 정보 저장 후 Auto increment 된 product_id 가져오기
-            int productId = productMapper.selectLastInsertId();
+                // TBL_PRODUCT 에 상품 정보 저장 후 Auto increment 된 product_id 가져오기
+                Integer productId = productMapper.selectLastInsertId();
 
-            productMapper.insertProductCategory(productId, productCreateDto.getCategoryId());
 
-            // 추후 session에서 받아온 sellerId를 입력할 메소드 필요함
-            productMapper.insertSellerProduct(sellerId, productId);
+                productMapper.insertProductCategory(productId, (int)productCreateDto.getCategoryId());
 
-            return true;
-        } else {
-            return false;
+                // 추후 session에서 받아온 sellerId를 입력할 메소드 필요함
+                productMapper.insertSellerProduct(sellerId, productId);
+
+                return true;
+            }
         }
+        return false;
     }
 
     //** 상품 리스트 출력
     //usertype이 seller인 경우 판매자용으로
     // user인 경우 등록된 전체 상품 출력
     @Override
-    public Map<String, Object> listProduct(String userType, int categoryId, String productName) {
+    public List<ProductDto> listProduct(String userType, Integer categoryId, String productName) {
         // 판매자가 등록한 상품 정보가 없으면 null값 반환 or 정보 존재 시 상품 리스트 반환
 
-        //ResponseEntity에 전달해 줄 data
-        Map<String, Object> data = new HashMap();
-        //data에 담길 ArrayList
-        List<Object> productList = new ArrayList();
-        //mapper에서 넘어온 데이터를 받은 ArrayList
-        ArrayList<ProductListDto> productMapperList = null;
         // mapper에 전달할 query 문
         String subQuery = "";
-
+        List<ProductDto> productList = null;
         // 구매자는 default 값으로 userType을 "user"로 지정했기 때문에 별도의 subQuery를 지정할 필요가 없음
 
         //판매자일 경우
@@ -104,75 +100,53 @@ public class ProductServiceImpl implements ProductService {
         // 상품명이 빈 값이 아니면
         if (!productName.isEmpty()) {
             subQuery += " AND A.product_name LIKE '%" + productName + "%'";
-
-
         }
+
         // 카테고리 값이 0이 아니면
         if (categoryId != 0) {
             subQuery += " AND B.category_id=" + categoryId;
         }
-        System.out.println(subQuery);
 
         // Mapper에서 상품리스트 자료를 받아옴
-        productMapperList = (ArrayList<ProductListDto>) productMapper.selectProductList(subQuery);
+        productList = productMapper.selectProductList(subQuery);
 
         // 만약 리스트가 존재하지 않는다면 null값 반환
-        if (Objects.equals(productMapperList, null)) {
+        if (Objects.equals(productList, null)) {
             return null;
         } else {
-
-            for (int i = 0; i < productMapperList.size(); i++) {
-                Map<String, Object> product = new HashMap<>();
-                product.put("productId", productMapperList.get(i).getProductId());
-                product.put("productName", productMapperList.get(i).getProductName());
-                product.put("productPrice", productMapperList.get(i).getProductPrice());
-                product.put("productImgFileName", productMapperList.get(i).getProductImgFileName());
-                product.put("productImgPath", productMapperList.get(i).getProductImgPath());
-                product.put("productQuantity", productMapperList.get(i).getProductQuantity());
-
-                productList.add(product);
-            }
-            data.put("data", productList);
-            return data;
+            return productList;
         }
     }
 
     // ** 상품 상세 정보 기능
     @Override
-    public Map<String, Object> detailProduct(int productId) {
+    public ProductDto detailProduct(Integer productId) {
 
-        Category category = this.detailCategory(productId);
+        //productId에 해당하는 상품상세정보 조회
         ProductDto productDetailDto = productMapper.selectProductDetail(productId);
 
-        //ResponseEntity에 넘겨 줄 data
-        Map<String, Object> data = new HashMap<>();
-        // data 에 담길 Map 방식 data
-        Map<String, Object> productDetail = new HashMap<>();
-        // 추후에 productImgPath 관련 추가해야 함
-        productDetail.put("productId", productDetailDto.getProductId());
-        productDetail.put("productName", productDetailDto.getProductName());
-        productDetail.put("productPrice", productDetailDto.getProductPrice());
-        productDetail.put("productImgFileName", productDetailDto.getProductImgFileName());
-        productDetail.put("productDescription", productDetailDto.getProductDescription());
-        productDetail.put("productQuantity", productDetailDto.getProductQuantity());
-        productDetail.put("categoryName", category.getCategoryName());
-        productDetail.put("categoryId", category.getCategoryId());
-        data.put("data", productDetail);
+        //productDetailDto가 존재하지 않을 경우
+        if (Objects.equals(productDetailDto, null)) {
+            return null;
+        }
 
-        return data;
+        return productDetailDto;
     }
 
 //**등록한 상품 정보 수정
 // product_id값에 해당하는 TBL_Category 값이 잇으면 category 반환
 // 아니면 null 반환
 
+    //productId에 해당하는 category 값 가져오기
     @Override
-    public Category detailCategory(int productId) {
+    public Category detailCategory(Integer productId) {
+
         Category category = productMapper.selectCategory(productId);
-        if (category != null) {
-            return category;
-        } else {
+
+        if (Objects.equals(category, null)) {
             return null;
+        } else {
+            return category;
         }
     }
 
@@ -212,7 +186,7 @@ public class ProductServiceImpl implements ProductService {
 
     //** 상품 삭제
     @Override
-    public boolean deleteProduct(int productId) {
+    public boolean deleteProduct(Integer productId) {
         boolean flag = true;
         productMapper.deleteProduct(productId);
 
@@ -226,23 +200,17 @@ public class ProductServiceImpl implements ProductService {
 //상품 카테고리 목록 가져오기 - 상품 등록
 
     @Override
-    public Map<String, Object> listCategory() {
+    public List<Category> listCategory() {
 
-        Map<String, Object> data = new HashMap();
-
-        List<Object> categoryList = new ArrayList();
-        ArrayList<Category> categoryMapperList = (ArrayList<Category>) productMapper.selectCategoryList();
-
-        for (int i = 0; i < categoryMapperList.size(); i++) {
-            Map<String, Object> category = new HashMap<>();
-            category.put("categoryId", categoryMapperList.get(i).getCategoryId());
-            category.put("categoryName", categoryMapperList.get(i).getCategoryName());
-            categoryList.add(category);
+        List<Category> categoryMapperList = productMapper.selectCategoryList();
+        // 카테고리 목록이 존재하지 않으면
+        if (Objects.equals(categoryMapperList, null)) {
+            return null;
+        } else {
+            return categoryMapperList;
         }
 
-        data.put("data", categoryList);
 
-        return data;
     }
 
     //상품 파일이미지 추가 - 상품 이미지 파일 명 반환
@@ -317,7 +285,6 @@ public class ProductServiceImpl implements ProductService {
 
         Integer check = productMapper.selectDuplicateCart(cartDto.getUserId(), cartDto.getProductId());
 
-        System.out.println(check);
         // 동일한 상품에 대한 장바구니 데이터가 존재할 경우
         if (check != null) {
             productMapper.updateDuplicateCart(cartDto.getQuantity(), check);
@@ -341,7 +308,7 @@ public class ProductServiceImpl implements ProductService {
 
     //** 장바구니 삭제
     @Override
-    public boolean deleteCart(int userId, int productId) {
+    public boolean deleteCart(Integer userId, Integer productId) {
         int flag = productMapper.deleteCart(userId, productId);
         if (flag == 1) return true;
         else return false;
@@ -349,31 +316,15 @@ public class ProductServiceImpl implements ProductService {
 
     //** 장바구니 리스트 출력
     @Override
-    public Map<String, Object> listCart(int userId) {
+    public List<CartListDto> listCart(Integer userId) {
 
-        Map<String, Object> data = new HashMap();
+        List<CartListDto> cartMapperList = productMapper.selectCart(userId);
 
-        List<Object> cartList = new ArrayList();
-        ArrayList<CartListDto> cartMapperList = (ArrayList<CartListDto>) productMapper.selectCart(userId);
-
-        for (int i = 0; i < cartMapperList.size(); i++) {
-            Map<String, Object> cart = new HashMap<>();
-
-            cart.put("productId", cartMapperList.get(i).getProductId());
-            cart.put("quantity", cartMapperList.get(i).getQuantity());
-            cart.put("productName", cartMapperList.get(i).getProductName());
-            cart.put("productPrice", cartMapperList.get(i).getProductPrice());
-            cart.put("productImgFileName", cartMapperList.get(i).getProductImgFileName());
-            cart.put("productImgPath", cartMapperList.get(i).getProductImgPath());
-            cart.put("productQuantity", cartMapperList.get(i).getProductQuantity());
-
-
-            cartList.add(cart);
+        if (Objects.equals(cartMapperList, null)) {
+            return null;
         }
 
-        data.put("data", cartList);
-
-        return data;
+        return cartMapperList;
     }
 
     //* 댓글 관련 기능
@@ -400,32 +351,28 @@ public class ProductServiceImpl implements ProductService {
     //** 댓글 수정 전 자료 가져오기
 
     @Override
-    public Map<String, Object> detailComment(int commentId) {
+    public CommentDto detailComment(Integer commentId) {
 
         // commentId가 잘못된 값일 경우 null을 반환
         if (productMapper.selectCountById(commentId) == 0) {
             return null;
         }
+        CommentDto commentDto = productMapper.selectComment(commentId);
 
-        Map<String, Object> data = new HashMap<>();
+        // commentDto가 존재하지 않을 경우
+        if (Objects.equals(commentDto, null)) {
+            return null;
+        } else {
+            return commentDto;
+        }
 
-        Map<String, Object> comment = new HashMap<>();
-
-        comment.put("commentId", productMapper.selectComment(commentId).getCommentId());
-        comment.put("orderId", productMapper.selectComment(commentId).getOrderId());
-        comment.put("productId", productMapper.selectComment(commentId).getProductId());
-        comment.put("score", productMapper.selectComment(commentId).getScore());
-        comment.put("content", productMapper.selectComment(commentId).getContent());
-        data.put("data", comment);
-
-        return data;
     }
 
 
     //** 댓글 수정 기능
 
     @Override
-    public boolean updateComment(int userId, int commentId, CommentDto commentDto) {
+    public boolean updateComment(Integer userId, Integer commentId, CommentDto commentDto) {
 
 
         // 삭제된 댓글이라 수정할 수 없을 경우
@@ -458,7 +405,8 @@ public class ProductServiceImpl implements ProductService {
                 subquery += " ,A.content='" + commentDto.getContent() + "'";
             }
         }
-
+        System.out.println(subquery);
+        System.out.println(commentDto.getOrderId());
         if (productMapper.updateComment(userId, commentDto.getOrderId(), subquery) == 0) {
             return false;
         } else {
@@ -468,7 +416,7 @@ public class ProductServiceImpl implements ProductService {
 
     // 댓글 삭제
     @Override
-    public boolean deleteComment(int userId, Integer commentId) {
+    public boolean deleteComment(Integer userId, Integer commentId) {
 
         //제대로 삭제가 되어있지 않으면 false 반환
         if (productMapper.deleteComment(userId, commentId) == 0) {
@@ -480,13 +428,10 @@ public class ProductServiceImpl implements ProductService {
 
     // 사용자가 작성한 댓글 목록 or 상품에 담긴 댓글 리스트 출력
     @Override
-    public Map<String, Object> listComment(int productId, int page, int size, Integer userId) {
+    public List<CommentListDto> listComment(Integer productId, Integer page, Integer size, Integer userId) {
 
 
-        //
-        Map<String, Object> data = new HashMap<>();
-        //
-        List<Object> commentList = new ArrayList();
+        List<CommentListDto> commentList = null;
 
 
         String subQuery = "";
@@ -497,145 +442,112 @@ public class ProductServiceImpl implements ProductService {
         }
 
         // mapper 쪽에서 데이터 받아오기
-        ArrayList<CommentListDto> commentMapperList =
-                (ArrayList<CommentListDto>) productMapper.selectCommentList(productId, (page - 1) * size, size, subQuery);
+        commentList = productMapper.selectCommentList(productId, (page - 1) * size, size, subQuery);
 
-
-        for (int i = 0; i < commentMapperList.size(); i++) {
-            Map<String, Object> comment = new HashMap<>();
-            comment.put("commentId", commentMapperList.get(i).getCommentId());
-            comment.put("orderId", commentMapperList.get(i).getOrderId());
-            comment.put("productId", commentMapperList.get(i).getProductId());
-            comment.put("name", commentMapperList.get(i).getName());
-            comment.put("score", commentMapperList.get(i).getScore());
-            comment.put("content", commentMapperList.get(i).getContent());
-            comment.put("createdAt", commentMapperList.get(i).getCreatedAt());
-            commentList.add(comment);
+        // 댓글 목록이 존재하지 않으면
+        if (Objects.equals(commentList, null)) {
+            return null;
+        } else {
+            return commentList;
         }
-        data.put("data", commentList);
-
-        return data;
     }
 
     //** 상품에 달린 댓글 개수 반환
     @Override
-    public Map<String, Object> countProductComment(int productId) {
-        Map<String, Object> data = new HashMap<>();
-        Map<String, Object> count = new HashMap<>();
-        count.put("count", productMapper.selectCommentCountByproductId(productId));
+    public Integer countProductComment(Integer productId) {
+
+        Integer countProductComment = productMapper.selectCommentCountByproductId(productId);
+
         // 상품에 등록된 댓글이 없을 경우
-        if (Objects.equals(count.get("count"),null)) {
+        if (Objects.equals(countProductComment, null)) {
             return null;
         } else {
-            data.put("data", count);
-            return data;
+            return countProductComment;
         }
     }
 
     //** 카테고리에 관련한 추천 상품 리스트
     @Override
-    public Map<String, Object> categoryProductList(int categoryId) {
+    public List<ProductDto> categoryProductList(Integer categoryId) {
 
         if (categoryId == 0) {
             return null;
         }
-        Map<String, Object> data = new HashMap<>();
-        List<Object> productList = new ArrayList();
-        ArrayList<ProductDto> productMapperList =
-                (ArrayList<ProductDto>) productMapper.selectProductByCategoryId(categoryId);
-        //category 값이 존재하면
 
-        for (int i = 0; i < productMapperList.size(); i++) {
-            Map<String, Object> product = new HashMap<>();
-            product.put("productId", productMapperList.get(i).getProductId());
-            product.put("productName", productMapperList.get(i).getProductName());
-            product.put("productPrice", productMapperList.get(i).getProductPrice());
-            product.put("productImgFileName", productMapperList.get(i).getProductImgFileName());
-            product.put("productImgPath", productMapperList.get(i).getProductImgPath());
-            productList.add(product);
+        // Mapper에서 Data 가져오기
+        List<ProductDto> productMapperList = productMapper.selectProductByCategoryId(categoryId);
+
+        if (Objects.equals(productMapperList, null)) {
+            return null;
+        } else {
+            //category 값이 존재하면
+
+            return productMapperList;
         }
-        data.put("data", productList);
-
-        return data;
     }
 
     //** 평점별 추천 상품 리스트
     @Override
-    public Map<String, Object> topRatedProductList() {
-        Map<String, Object> data = new HashMap<>();
-        List<Object> productList = new ArrayList();
-        ArrayList<ProductTopRatedDto> productMapperList =
-                (ArrayList<ProductTopRatedDto>) productMapper.selectProductByTopScore();
+    public List<ProductTopRatedDto> topRatedProductList() {
+
+        List<ProductTopRatedDto> productMapperList = productMapper.selectProductByTopScore();
 
         if (Objects.equals(productMapperList, null)) {
             return null;
+        } else {
+            return productMapperList;
         }
-
-        for (int i = 0; i < productMapperList.size(); i++) {
-            Map<String, Object> product = new HashMap<>();
-            product.put("score", productMapperList.get(i).getScore());
-            product.put("productId", productMapperList.get(i).getProductId());
-            product.put("productName", productMapperList.get(i).getProductName());
-            product.put("productPrice", productMapperList.get(i).getProductPrice());
-            product.put("productImgFileName", productMapperList.get(i).getProductImgFileName());
-            product.put("productImgPath", productMapperList.get(i).getProductImgPath());
-            productList.add(product);
-        }
-
-        data.put("data", productList);
-
-        return data;
     }
 
     //** 상품 개수 반환
     @Override
-    public Map<String, Object> countProduct(String productName, int categoryId) {
+    public Integer countProduct(String productName, Integer categoryId) {
 
-        Map<String, Object> data = new HashMap<>();
-        Map<String,Object> productCount = new HashMap<>();
-        String subQuery="";
+        Integer productCount = 0;
+        String subQuery = "";
 
         // categoryId 값이 존재하지 않는 경우
         if (categoryId == 0) {
             return null;
-        } else{
-            subQuery +="AND B.category_id="+categoryId+" ";
+        } else {
+            subQuery += "AND B.category_id=" + categoryId + " ";
 
         }
         // 상품명이 존재하지 않는 경우
-        if (Objects.equals(productName, null)){
+        if (Objects.equals(productName, null)) {
             return null;
         } else {
-            if(!productName.equals("")){
-                subQuery += "AND A.product_name LIKE '%"+productName+"%'";
+            if (!productName.equals("")) {
+                subQuery += "AND A.product_name LIKE '%" + productName + "%'";
             }
 
         }
+
+        productCount = productMapper.selectProductCount(subQuery);
+
         //값이 존재하지 않으면
-        if(Objects.equals(productMapper.selectProductCount(subQuery),null)){
+        if (Objects.equals(productCount, null)) {
             return null;
         } else {
-            productCount.put("count", productMapper.selectProductCount(subQuery));
-            data.put("data", productCount);
-            return data;
+
+            return productCount;
         }
     }
 
     // error 메서지 처리
     //** 에러 메시지 종류애 따라 처리
     @Override
-    public Map<String, Object> errorMessage(String error) {
-        Map<String, Object> data = new HashMap<>();
-        Map<String, Object> message = new HashMap<>();
+    public String errorMessage(String error) {
+
+        String errorMessage = "";
 
         if (error.equals("file")) {
-            message.put("message", "FileNotFound");
+            errorMessage = "FileNotFound";
         } else if (error.equals("content")) {
-            message.put("message", "ContentNotFound");
+            errorMessage = "ContentNotFound";
         }
-        data.put("data", message);
 
-        return data;
+        return errorMessage;
     }
-
 }
+
