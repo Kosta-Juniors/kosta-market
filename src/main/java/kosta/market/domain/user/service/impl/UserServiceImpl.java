@@ -53,12 +53,18 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public boolean modifyUser(User user) {
+    public User userAndSellerInfo(Integer userId) {
+        return userMapper.selectUserAndSellerByUserId(userId);
+    }
 
-        User userModify = userMapper.selectUserByUserId(user.getUserId());
+    @Override
+    public boolean modifyUser(User user, HttpSession session) {
+
+        Integer userId = (Integer) session.getAttribute("userId");
+        User userModify = userMapper.selectUserByUserId(userId);
+
         if (userModify != null) {
-            userMapper.updateUser(userModify.getUserId(), userModify.getPassword(),
-                userModify.getContact());
+            userMapper.updateUser(user.getUserId(), user.getPassword(), user.getContact());
             return true;
         } else {
             return false;
@@ -82,13 +88,10 @@ public class UserServiceImpl implements UserService {
     @Override
     public boolean addAddress(AddressDto addressDto, HttpSession session) {
 
-        Integer userId = (Integer) session.getAttribute("userId");
-
-
         if (addressDto.getDeliveryPlace() != null) {
             userMapper.updateAddress(addressDto.getUserId());
             userMapper.insertAddress(addressDto.getUserId(), addressDto.getDeliveryPlace(),
-                addressDto.getTitle(), addressDto.getRecipient(), addressDto.getContact());
+                addressDto.getTitle(), addressDto.getContact(), addressDto.getRecipient());
             return true;
         }
         return false;
@@ -107,9 +110,9 @@ public class UserServiceImpl implements UserService {
         }
 
         Integer userId = (Integer) session.getAttribute("userId");
-        AddressDto addressInfo = userMapper.selectAddressById(userId, addressId);
+        AddressDto address = userMapper.selectAddressById(userId, addressId);
 
-        if (addressInfo != null ) { // addressInfo.getAddressId().equals(addressId)
+        if (address != null && address.getAddressId().equals(addressId) ) {
             userMapper.deleteAddress(addressId);
             return true;
         }
@@ -118,9 +121,6 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public boolean addSeller(SellerDto sellerDto, HttpSession session) {
-
-        Integer userId = (Integer) session.getAttribute("userId");
-        userMapper.selectSellerByUserId(userId);
 
         if (sellerDto.getBusinessRegNo() != null) {
             session.setAttribute("sellerId", sellerDto.getSellerId());
@@ -132,15 +132,15 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public SellerDto sellerInfo(Integer userId) {
-        return userMapper.selectSellerByUserId(userId);
-    }
+    public boolean removeSeller(Integer sellerId, HttpSession session) {
 
-    @Override
-    public boolean removeSeller(SellerDto sellerDto, HttpSession session) {
-        Object userId = session.getAttribute("userId");
-        SellerDto seller = userMapper.selectSellerByUserId(userId);
-        if (userId != null) {
+        if (Objects.equals(sellerId, null)) {
+            return false;
+        }
+
+        Integer userId = (Integer) session.getAttribute("userId");
+        SellerDto seller = userMapper.selectSellerById(userId, sellerId);
+        if (seller != null && seller.getSellerId().equals(sellerId)) {
             userMapper.deleteSeller(seller.getSellerId());
             session.removeAttribute("sellerId");
             return true;

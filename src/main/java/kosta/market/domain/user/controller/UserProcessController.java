@@ -51,12 +51,20 @@ public class UserProcessController {
     public ResponseEntity getUserInfo(HttpSession session) {
 
         Integer userId = (Integer) session.getAttribute("userId");
-        Object userInfo = userService.userInfo(userId);
+        Object userAndSellerInfo = userService.userAndSellerInfo(userId);
 
-        Map<String, Object> map = new HashMap<>();
-        map.put("data", userInfo);
+        if(userAndSellerInfo != null) {
 
-        return new ResponseEntity(map, HttpStatus.OK);
+            Map<String, Object> map = new HashMap<>();
+            map.put("data", userAndSellerInfo);
+            return new ResponseEntity(map, HttpStatus.OK);
+        }
+        else {
+            Object userInfo = userService.userInfo(userId);
+            Map<String, Object> map = new HashMap<>();
+            map.put("data", userInfo);
+            return new ResponseEntity(map, HttpStatus.OK);
+        }
     }
 
     @PostMapping("/api/user/signup")
@@ -73,9 +81,9 @@ public class UserProcessController {
 
     @PutMapping("/api/user")
     @ResponseBody
-    public ResponseEntity UserModify(@RequestBody User user) {
+    public ResponseEntity UserModify(@RequestBody User user, HttpSession session) {
 
-        boolean modifyUser = userService.modifyUser(user);
+        boolean modifyUser = userService.modifyUser(user, session);
 
         if (modifyUser) {
             return new ResponseEntity(HttpStatus.OK);
@@ -85,7 +93,7 @@ public class UserProcessController {
 
     @DeleteMapping(value = "/api/user")
     @ResponseBody
-    public ResponseEntity userRemove(HttpSession session, @RequestBody UserCheckDto userCheckDto) {
+    public ResponseEntity userRemove(@RequestBody UserCheckDto userCheckDto, HttpSession session) {
 
         boolean removeUser = userService.removeUser(userCheckDto, session);
 
@@ -134,8 +142,7 @@ public class UserProcessController {
 
     @DeleteMapping(value = "/api/user/address")
     @ResponseBody
-    public ResponseEntity addressDelete(@RequestBody AddressCheckDto addressCheckDto, HttpSession session)
-        throws JsonProcessingException {
+    public ResponseEntity addressDelete(@RequestBody AddressCheckDto addressCheckDto, HttpSession session) {
 
         boolean removeAddress = userService.removeAddress(addressCheckDto.getAddressId(), session);
 
@@ -161,10 +168,9 @@ public class UserProcessController {
     @ResponseBody
     public ResponseEntity sellerDelete(@RequestBody SellerDto sellerDto, HttpSession session) {
 
-        boolean removeSeller = userService.removeSeller(sellerDto, session);
+        boolean removeSeller = userService.removeSeller(sellerDto.getSellerId(), session);
 
         if (removeSeller) {
-
             return new ResponseEntity(HttpStatus.OK);
         }
         return new ResponseEntity(HttpStatus.NOT_FOUND);

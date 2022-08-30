@@ -40,13 +40,15 @@ public interface UserService {
 	 */
 	User userInfo(Integer userId);
 
+	User userAndSellerInfo(Integer userId);
+
 	/**
 	 * 기능 : 회원정보 변경처리
 	 * 변경 가능한 정보 : 패스워드(password), 연락처(contact)
 	 * @param user user_id를 통해 User를 검색해 userModify 인스턴스를 생성하고 이를 통해 변경처리
 	 * @return 회원정보 변경처리에 성공하면 true, 실패하면 false
 	 */
-	boolean modifyUser(User user);
+	boolean modifyUser(User user, HttpSession session);
 
 	/**
 	 * 기능 : 회원 탈퇴 처리
@@ -94,21 +96,12 @@ public interface UserService {
 	boolean addSeller(SellerDto sellerDto, HttpSession session);
 
 	/**
-	 * 기능 : 판매자 정보 불러오기 -> 판매자 정보를 삭제 위한 목적으로 생성
-	 * @param userId
-	 * @return
-	 */
-	SellerDto sellerInfo(Integer userId);
-
-	/**
 	 * 기능 : 판매자 제거
-	 * 판매자를 삭제하면서 "seller_id" 세션 삭제
-	 * @param sellerDto
-	 * @param session "user_id" 세션을 통해 user_id를 가져와 sellerDto에 있는 판매자 정보를 불러오고,
-	 *                정보가 있으면 판매자 삭제
+	 * @param SellId sellId와 userId를 통해 판매자를 삭제
+	 * @param session 세션을 통해 userId를 가져옴
 	 * @return
 	 */
-	boolean removeSeller(SellerDto sellerDto, HttpSession session);
+	boolean removeSeller(Integer SellId, HttpSession session);
 
 //	/**
 //	 * 기능 : 로그아웃

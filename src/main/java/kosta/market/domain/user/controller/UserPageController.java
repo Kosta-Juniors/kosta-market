@@ -5,7 +5,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 
 @Controller
 public class UserPageController {
-    
+
     @GetMapping("/user/signup")
     public String signup() {
         return "/user/signup.jsp";

@@ -29,18 +29,22 @@ public interface UserMapper {
 	@Select("SELECT * FROM TBL_USER WHERE user_id = #{userId}")
 	User selectUserByUserId(@Param("userId") Object userId);
 
+	@Select("SELECT A.user_id, A.username, A.password, A.name, A.contact, B.seller_id FROM TBL_USER AS A"
+		+ " JOIN TBL_SELLER AS B ON A.user_id = B.user_id WHERE A.user_id = #{userId}")
+	User selectUserAndSellerByUserId(@Param("userId") Object userId);
+
 	@Update("UPDATE TBL_USER SET password=#{password}, contact=#{contact} WHERE user_id= #{userId}" )
 	void updateUser(@Param("userId") Object userId, @Param("password") Object password, @Param("contact") Object contact);
 
 	@Delete("DELETE FROM TBL_USER WHERE user_id = #{userId}")
 	void deleteUser(@Param("userId") Object userId);
 
-	@Update("UPDATE TBL_ADDRESS SET is_default_address='0' WHERE user_id=#{userId}")
+	@Update("UPDATE TBL_ADDRESS SET is_default_address='0' WHERE user_id= #{userId}")
 	void updateAddress(@Param("userId") Object userId);
 
 	// is_default 1이면 현재 배송지, 0이면 과거 배송지
-	@Insert("INSERT INTO TBL_ADDRESS(user_id, delivery_place, is_default_address, title, recipient, contact) VALUES(#{userId}, #{deliveryPlace}, '1', #{title}, #{recipient}, #{contact})")
-	int insertAddress(@Param("userId") Object userId, @Param("deliveryPlace") Object deliveryPlace, @Param("title") Object title, @Param("contact") Object recipient, @Param("contact") Object contact);
+	@Insert("INSERT INTO TBL_ADDRESS(user_id, delivery_place, is_default_address, title, recipient, contact) VALUES(#{userId}, #{deliveryPlace}, '1', #{title}, #{contact}, #{recipient})")
+	int insertAddress(@Param("userId") Object userId, @Param("deliveryPlace") Object deliveryPlace, @Param("title") Object title, @Param("contact") Object contact, @Param("recipient") Object recipient);
 
 	@Select("SELECT * FROM TBL_ADDRESS WHERE user_id = #{userId} ORDER BY address_id DESC LIMIT 3")
 	List<AddressDto> selectListAddressByUserId(@Param("userId") Object userId);
@@ -53,8 +57,8 @@ public interface UserMapper {
 	@Insert("INSERT INTO TBL_SELLER(user_id, business_reg_no) VALUES(#{userId}, #{businessRegNo})")
 	int insertSeller(@Param("userId") Object userId, @Param("businessRegNo") Object businessRegNo);
 
-	@Select("SELECT * FROM TBL_SELLER WHERE user_id = #{userId}")
-	SellerDto selectSellerByUserId(@Param("userId") Object userId);
+	@Select("SELECT * FROM TBL_SELLER WHERE user_id = #{userId} AND seller_id = #{sellerId}")
+	SellerDto selectSellerById(@Param("userId") Object userId, @Param("sellerId") Object SellerId);
 
 	@Delete("DELETE FROM TBL_SELLER WHERE seller_id = #{sellerId}")
 	void deleteSeller(@Param("sellerId") Object sellerId);
