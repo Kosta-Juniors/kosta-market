@@ -264,7 +264,7 @@ public class OrderProcessController {
         }
 
         // 주문 취소
-        @PostMapping(value = "/api/order/sheet/{order_id}/cancel")
+        @PatchMapping(value = "/api/order/sheet/{order_id}/cancel")
         public ResponseEntity orderCancel(@PathVariable("order_id") int orderId, @RequestParam("product_id") int productId) throws JsonProcessingException{
 
             boolean exceptionflag1 = service.handlingIdException(orderId);
