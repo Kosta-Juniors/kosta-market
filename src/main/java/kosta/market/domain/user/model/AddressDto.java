@@ -9,8 +9,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class
-AddressDto {
+public class AddressDto {
     private Integer addressId;
     private Integer userId;
     private String deliveryPlace;
