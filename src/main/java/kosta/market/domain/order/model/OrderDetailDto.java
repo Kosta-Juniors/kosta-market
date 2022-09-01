@@ -8,18 +8,20 @@ import java.sql.Date;
 
 @Getter
 @Setter
-public class OrderDetailDto {
+public class OrderDetailDto { //cartList주문의 (상품별)개별사항
 
-    private int  orderId;
+    // TBL_ORDER_DETAIL
     private int  productId;
     private int  orderQuantity;
-    private Date orderDate;
     private String  orderState;
+    private int orderPrice;
+
+    // TBL_PRODUCT
     private String  productName;
-    private int  paymentPrice;
-    private String  paymentMethod;
-    private String  deliveryPlace;
-    private String  name;
-    private String  contact;
+
+
+
+
+
 
 }

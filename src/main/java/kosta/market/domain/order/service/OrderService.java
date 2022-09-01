@@ -1,21 +1,26 @@
 package kosta.market.domain.order.service;
 
 import kosta.market.domain.order.model.OrderDetailDto;
+import kosta.market.domain.order.model.OrderDetailForSellerDto;
 import kosta.market.domain.order.model.OrderListDto;
 import kosta.market.domain.order.model.OrderRequestDto;
 import kosta.market.domain.user.model.Address;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public interface OrderService {
 
 	List<Address> getAddress(int userId);
 
-	boolean addOrder(OrderRequestDto ord, int productId);
+	boolean addOrder(ArrayList<OrderRequestDto> cartList, String paymentMethod, int addressId, int userId);
+
+	// addOrder 작업중 to 장바구니에서 LIST로 구매기능
+	boolean addOrder(List<OrderRequestDto> orderRequestDtosList, String paymentMethod, int addressId, int userId);
 
 	List<OrderListDto> listByUserIdOrder(int userId);
 
-	List<OrderListDto> listBySellerIdOrder(int sellerId);
+	ArrayList<OrderDetailForSellerDto> listBySellerIdOrder(int sellerId);
 
 
 	OrderDetailDto detailOrder(int orderId);
