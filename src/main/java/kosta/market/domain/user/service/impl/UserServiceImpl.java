@@ -9,6 +9,7 @@ import kosta.market.domain.user.model.User;
 import kosta.market.domain.user.model.UserCheckDto;
 import kosta.market.domain.user.model.UserCreateDto;
 import kosta.market.domain.user.model.UserMapper;
+import kosta.market.domain.user.model.UserModifyDto;
 import kosta.market.domain.user.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -33,13 +34,13 @@ public class UserServiceImpl implements UserService {
     @Override
     public boolean loginUser(UserCheckDto userCheckDto, HttpSession session) {
 
-        User user = userMapper.selectUserByUsernameAndPassword(userCheckDto.getUsername(),
+        UserCheckDto checkUser = userMapper.selectUserByUsernameAndPassword(userCheckDto.getUsername(),
             userCheckDto.getPassword());
-        if (user != null && userCheckDto.getPassword().equals(user.getPassword())) {
-            session.setAttribute("userId", user.getUserId());
+        if (checkUser != null && userCheckDto.getPassword().equals(checkUser.getPassword())) {
+            session.setAttribute("userId", checkUser.getUserId());
             if (userMapper.selectJoinUserByUsernameAndPassword(userCheckDto.getUsername(),
                 userCheckDto.getPassword()) != null) {
-                session.setAttribute("sellerId", user.getSellerId());
+                session.setAttribute("sellerId", checkUser.getSellerId());
             }
             return true;
         } else {
@@ -53,18 +54,18 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User userAndSellerInfo(Integer userId) {
+    public SellerDto userAndSellerInfo(Integer userId) {
         return userMapper.selectUserAndSellerByUserId(userId);
     }
 
     @Override
-    public boolean modifyUser(User user, HttpSession session) {
+    public boolean modifyUser(UserModifyDto userModifyDto, HttpSession session) {
 
         Integer userId = (Integer) session.getAttribute("userId");
-        User userModify = userMapper.selectUserByUserId(userId);
+        UserModifyDto userModify = userMapper.selectUserCheckByUserId(userId);
         if (userModify != null) {
-            userMapper.updateUser(user.getUserId(), user.getPassword(),
-                user.getContact());
+            userMapper.updateUser(userModifyDto.getUserId(), userModifyDto.getPassword(),
+                userModifyDto.getContact());
             return true;
         } else {
             return false;
@@ -75,9 +76,9 @@ public class UserServiceImpl implements UserService {
     public boolean removeUser(UserCheckDto userCheckDto, HttpSession session) {
 
         Integer userId = (Integer) session.getAttribute("userId");
-        User user = userMapper.selectUserByPassword(userCheckDto.getPassword());
+        UserCheckDto checkUser = userMapper.selectUserByPassword(userCheckDto.getPassword());
 
-        if (user != null && userCheckDto.getPassword().equals(user.getPassword())) {
+        if (checkUser != null && userCheckDto.getPassword().equals(checkUser.getPassword())) {
             userMapper.deleteUser(userId);
             session.removeAttribute("userId");
             return true;

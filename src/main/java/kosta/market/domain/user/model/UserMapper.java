@@ -18,23 +18,26 @@ public interface UserMapper {
         @Param("name") Object name, @Param("contact") Object contact);
 
     @Select("SELECT * FROM TBL_USER WHERE username = #{username} AND password= #{password}")
-    User selectUserByUsernameAndPassword(@Param("username") Object username,
+    UserCheckDto selectUserByUsernameAndPassword(@Param("username") Object username,
         @Param("password") Object password);
 
     @Select("SELECT * FROM TBL_USER WHERE password = #{password}")
-    User selectUserByPassword(@Param("password") Object password);
+    UserCheckDto selectUserByPassword(@Param("password") Object password);
 
     @Select("SELECT A.user_id, A.username, A.password, A.name, A.contact, B.seller_id FROM TBL_USER AS A"
-            + " JOIN TBL_SELLER AS B ON A.user_id = B.user_id WHERE A.username = #{username} and A.password = #{password}")
-    User selectJoinUserByUsernameAndPassword(@Param("username") Object username,
+        + " JOIN TBL_SELLER AS B ON A.user_id = B.user_id WHERE A.username = #{username} and A.password = #{password}")
+    UserCheckDto selectJoinUserByUsernameAndPassword(@Param("username") Object username,
         @Param("password") Object password);
 
-    @Select("SELECT * FROM TBL_USER WHERE user_id = #{userId}")
+    @Select("SELECT user_id, username, name, contact FROM TBL_USER WHERE user_id = #{userId}")
     User selectUserByUserId(@Param("userId") Object userId);
 
-    @Select("SELECT A.user_id, A.username, A.password, A.name, A.contact, B.seller_id FROM TBL_USER AS A"
-            + " JOIN TBL_SELLER AS B ON A.user_id = B.user_id WHERE A.user_id = #{userId}")
-    User selectUserAndSellerByUserId(@Param("userId") Object userId);
+    @Select("SELECT * FROM TBL_USER WHERE user_id = #{userId}")
+    UserModifyDto selectUserCheckByUserId(@Param("userId") Object userId);
+
+    @Select("SELECT A.user_id, A.username, A.password, A.name, A.contact, B.seller_id, B.business_reg_no FROM TBL_USER AS A"
+        + " JOIN TBL_SELLER AS B ON A.user_id = B.user_id WHERE A.user_id = #{userId}")
+    SellerDto selectUserAndSellerByUserId(@Param("userId") Object userId);
 
     @Update("UPDATE TBL_USER SET password=#{password}, contact=#{contact} WHERE user_id= #{userId}")
     void updateUser(@Param("userId") Object userId, @Param("password") Object password,

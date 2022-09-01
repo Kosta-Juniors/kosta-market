@@ -11,8 +11,9 @@ import lombok.Setter;
 @AllArgsConstructor
 public class SellerDto {
     private Integer userId;
+    private String username;
+    private String name;
+    private String contact;
     private Integer sellerId;
     private String businessRegNo;
-
-
 }

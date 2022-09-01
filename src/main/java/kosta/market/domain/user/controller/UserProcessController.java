@@ -10,9 +10,9 @@ import javax.servlet.http.HttpSession;
 import kosta.market.domain.user.model.AddressCheckDto;
 import kosta.market.domain.user.model.AddressDto;
 import kosta.market.domain.user.model.SellerDto;
-import kosta.market.domain.user.model.User;
 import kosta.market.domain.user.model.UserCheckDto;
 import kosta.market.domain.user.model.UserCreateDto;
+import kosta.market.domain.user.model.UserModifyDto;
 import kosta.market.domain.user.service.impl.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -26,7 +26,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
-
 public class UserProcessController {
 
 	@Autowired
@@ -46,6 +45,7 @@ public class UserProcessController {
 		return new ResponseEntity(HttpStatus.NOT_FOUND);
 	}
 
+
 	@GetMapping(value = "/api/user", produces = "application/json; charset=utf-8")
 	@ResponseBody
 	public ResponseEntity getUserInfo(HttpSession session) {
@@ -53,24 +53,22 @@ public class UserProcessController {
 		Integer userId = (Integer) session.getAttribute("userId");
 		Object userAndSellerInfo = userService.userAndSellerInfo(userId);
 
-		if(userAndSellerInfo != null) {
-
+		if (userAndSellerInfo != null) {
 			Map<String, Object> map = new HashMap<>();
 			map.put("data", userAndSellerInfo);
 			return new ResponseEntity(map, HttpStatus.OK);
-		}
-		else {
+		} else {
 			Object userInfo = userService.userInfo(userId);
 			Map<String, Object> map = new HashMap<>();
 			map.put("data", userInfo);
 			return new ResponseEntity(map, HttpStatus.OK);
 		}
+
 	}
 
-	@PostMapping("/api/user/signup")
+	@PostMapping(value = "/api/user/signup")
 	@ResponseBody
 	public ResponseEntity userAdd(@RequestBody UserCreateDto userCreateDto) {
-
 		boolean addUser = userService.addUser(userCreateDto);
 
 		if (addUser) {
@@ -81,9 +79,8 @@ public class UserProcessController {
 
 	@PutMapping("/api/user")
 	@ResponseBody
-	public ResponseEntity UserModify(@RequestBody User user, HttpSession session) {
-
-		boolean modifyUser = userService.modifyUser(user, session);
+	public ResponseEntity UserModify(@RequestBody UserModifyDto userModifyDto, HttpSession session) {
+		boolean modifyUser = userService.modifyUser(userModifyDto, session);
 
 		if (modifyUser) {
 			return new ResponseEntity(HttpStatus.OK);
@@ -91,22 +88,21 @@ public class UserProcessController {
 		return new ResponseEntity(HttpStatus.NOT_FOUND);
 	}
 
-	@DeleteMapping(value = "/api/user")
+	@DeleteMapping("/api/user")
 	@ResponseBody
 	public ResponseEntity userRemove(@RequestBody UserCheckDto userCheckDto, HttpSession session) {
-
 		boolean removeUser = userService.removeUser(userCheckDto, session);
 
 		if (removeUser) {
 			return new ResponseEntity(HttpStatus.OK);
 		}
 		return new ResponseEntity(HttpStatus.NOT_FOUND);
+
 	}
 
-	@PostMapping(value = "/api/user/address")
+	@PostMapping("/api/user/address")
 	@ResponseBody
 	public ResponseEntity addressAdd(@RequestBody AddressDto addressDto, HttpSession session) {
-
 		boolean addAddress = userService.addAddress(addressDto, session);
 
 		if (addAddress) {
@@ -122,16 +118,17 @@ public class UserProcessController {
 		Integer userId = (Integer) session.getAttribute("userId");
 
 		List<Object> addressList = new ArrayList();
-		ArrayList<AddressDto> addressArrayList = (ArrayList<AddressDto>)userService.addressInfo(userId);
-		for(int i=0; i <addressArrayList.size(); i++) {
+		ArrayList<AddressDto> addressArrayList = (ArrayList<AddressDto>) userService.addressInfo(
+			userId);
+		for (int i = 0; i < addressArrayList.size(); i++) {
 			Map<String, Object> address = new HashMap<>();
-			address.put("addressId",addressArrayList.get(i).getAddressId());
-			address.put("userId",addressArrayList.get(i).getUserId() );
-			address.put("deliveryPlace",addressArrayList.get(i).getDeliveryPlace() );
-			address.put("isDefaultAddress",addressArrayList.get(i).getIsDefaultAddress() );
-			address.put("title",addressArrayList.get(i).getTitle() );
-			address.put("recipient",addressArrayList.get(i).getRecipient() );
-			address.put("contact",addressArrayList.get(i).getContact() );
+			address.put("addressId", addressArrayList.get(i).getAddressId());
+			address.put("userId", addressArrayList.get(i).getUserId());
+			address.put("deliveryPlace", addressArrayList.get(i).getDeliveryPlace());
+			address.put("isDefaultAddress", addressArrayList.get(i).getIsDefaultAddress());
+			address.put("title", addressArrayList.get(i).getTitle());
+			address.put("recipient", addressArrayList.get(i).getRecipient());
+			address.put("contact", addressArrayList.get(i).getContact());
 			addressList.add(address);
 		}
 		Map<String, Object> map = new HashMap<>();
@@ -140,9 +137,11 @@ public class UserProcessController {
 		return new ResponseEntity(map, HttpStatus.OK);
 	}
 
-	@DeleteMapping(value = "/api/user/address")
+	@DeleteMapping("/api/user/address")
 	@ResponseBody
-	public ResponseEntity addressDelete(@RequestBody AddressCheckDto addressCheckDto, HttpSession session) {
+	public ResponseEntity addressDelete(@RequestBody AddressCheckDto addressCheckDto,
+		HttpSession session)
+		throws JsonProcessingException {
 
 		boolean removeAddress = userService.removeAddress(addressCheckDto.getAddressId(), session);
 
@@ -152,7 +151,7 @@ public class UserProcessController {
 		return new ResponseEntity(HttpStatus.NOT_FOUND);
 	}
 
-	@PostMapping(value = "/api/user/seller")
+	@PostMapping("/api/user/seller")
 	@ResponseBody
 	public ResponseEntity sellerAdd(@RequestBody SellerDto sellerDto, HttpSession session) {
 
@@ -164,7 +163,7 @@ public class UserProcessController {
 		return new ResponseEntity(HttpStatus.NOT_FOUND);
 	}
 
-	@DeleteMapping(value = "/api/user/seller")
+	@DeleteMapping("/api/user/seller")
 	@ResponseBody
 	public ResponseEntity sellerDelete(@RequestBody SellerDto sellerDto, HttpSession session) {
 

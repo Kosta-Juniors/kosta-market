@@ -7,6 +7,7 @@ import kosta.market.domain.user.model.SellerDto;
 import kosta.market.domain.user.model.User;
 import kosta.market.domain.user.model.UserCheckDto;
 import kosta.market.domain.user.model.UserCreateDto;
+import kosta.market.domain.user.model.UserModifyDto;
 
 public interface UserService {
 
@@ -37,15 +38,10 @@ public interface UserService {
      */
     User userInfo(Integer userId);
 
-    User userAndSellerInfo(Integer userId);
+    SellerDto userAndSellerInfo(Integer userId);
 
-    /**
-     * 기능 : 회원정보 변경처리 변경 가능한 정보 : 패스워드(password), 연락처(contact)
-     *
-     * @param user user_id를 통해 User를 검색해 userModify 인스턴스를 생성하고 이를 통해 변경처리
-     * @return 회원정보 변경처리에 성공하면 true, 실패하면 false
-     */
-    boolean modifyUser(User user, HttpSession session);
+
+    boolean modifyUser(UserModifyDto userModifyDto, HttpSession session);
 
     /**
      * 기능 : 회원 탈퇴 처리 회원 탈퇴시 필요한 정보 : 패스워드(password)
