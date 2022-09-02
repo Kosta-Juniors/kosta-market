@@ -20,7 +20,7 @@ import java.util.*;
 @RequiredArgsConstructor
 public class ProductServiceImpl implements ProductService {
 
-    private final ProductMapper productMapper;
+      private final ProductMapper productMapper;
 
     //우선 하드 코딩
     private int sellerId = 1;
@@ -83,16 +83,18 @@ public class ProductServiceImpl implements ProductService {
     //usertype이 seller인 경우 판매자용으로
     // user인 경우 등록된 전체 상품 출력
     @Override
-    public List<ProductDto> listProduct(String userType, Integer categoryId, String productName) {
+    public List<ProductListDto> listProduct(String userType, Integer categoryId, String sortBy, String productName,Integer size, Integer page) {
         // 판매자가 등록한 상품 정보가 없으면 null값 반환 or 정보 존재 시 상품 리스트 반환
 
         // mapper에 전달할 query 문
         String subQuery = "";
-        List<ProductDto> productList = null;
+
+
+        List<ProductListDto> productList = null;
         // 구매자는 default 값으로 userType을 "user"로 지정했기 때문에 별도의 subQuery를 지정할 필요가 없음
 
         //판매자일 경우
-        if (userType.equals("seller")) {
+        if (userType.equals("SELLER")) {
             // 판매자 초기목록
             subQuery = "AND C.seller_id=" + sellerId;
 
@@ -106,6 +108,18 @@ public class ProductServiceImpl implements ProductService {
         if (categoryId != 0) {
             subQuery += " AND B.category_id=" + categoryId;
         }
+        subQuery += " ORDER BY ";
+
+        if(sortBy.equals("default")){
+            subQuery += "A.product_id ";
+        } else if(sortBy.equals("top")){
+            subQuery += "D.score DESC ";
+        } else if(sortBy.equals("related")){
+            subQuery += "RAND() ";
+        }
+
+        if(userType.equals("SELLER")){}
+        else{ subQuery += " LIMIT "+(page-1)*size+","+size;}
 
         // Mapper에서 상품리스트 자료를 받아옴
         productList = productMapper.selectProductList(subQuery);
@@ -164,10 +178,10 @@ public class ProductServiceImpl implements ProductService {
                 String fileName = saveImg(imgFile);
                 productUpdateDto.setProductImgFileName(fileName);
                 productUpdateDto.setProductImgPath(basePath);
-            } else {
-                productUpdateDto.setProductImgFileName(productUpdateDto.getProductImgFileName());
-                productUpdateDto.setProductImgPath(basePath);
             }
+        } else {
+            productUpdateDto.setProductImgFileName(productUpdateDto.getProductImgFileName());
+            productUpdateDto.setProductImgPath(basePath);
         }
 
         if (productUpdateDto != null) {
@@ -466,63 +480,28 @@ public class ProductServiceImpl implements ProductService {
         }
     }
 
-    //** 카테고리에 관련한 추천 상품 리스트
-    @Override
-    public List<ProductDto> categoryProductList(Integer categoryId) {
-
-        if (categoryId == 0) {
-            return null;
-        }
-
-        // Mapper에서 Data 가져오기
-        List<ProductDto> productMapperList = productMapper.selectProductByCategoryId(categoryId);
-
-        if (Objects.equals(productMapperList, null)) {
-            return null;
-        } else {
-            //category 값이 존재하면
-
-            return productMapperList;
-        }
-    }
-
-    //** 평점별 추천 상품 리스트
-    @Override
-    public List<ProductTopRatedDto> topRatedProductList() {
-
-        List<ProductTopRatedDto> productMapperList = productMapper.selectProductByTopScore();
-
-        if (Objects.equals(productMapperList, null)) {
-            return null;
-        } else {
-            return productMapperList;
-        }
-    }
-
     //** 상품 개수 반환
     @Override
-    public Integer countProduct(String productName, Integer categoryId) {
+    public Integer countProduct(String userType, Integer categoryId, String productName) {
 
         Integer productCount = 0;
         String subQuery = "";
 
-        // categoryId 값이 존재하지 않는 경우
-        if (categoryId == 0) {
-            return null;
-        } else {
-            subQuery += "AND B.category_id=" + categoryId + " ";
-
+        //판매자일 경우
+        if (userType.equals("SELLER")) {
+            // 판매자 초기목록
+            subQuery = "AND C.seller_id=" + sellerId;
         }
-        // 상품명이 존재하지 않는 경우
-        if (Objects.equals(productName, null)) {
-            return null;
-        } else {
-            if (!productName.equals("")) {
-                subQuery += "AND A.product_name LIKE '%" + productName + "%'";
-            }
-
+        // 상품명이 빈 값이 아니면
+        if (!productName.isEmpty()) {
+            subQuery += " AND A.product_name LIKE '%" + productName + "%'";
         }
 
+        // 카테고리 값이 0이 아니면
+        if (categoryId != 0) {
+            subQuery += " AND B.category_id=" + categoryId;
+        }
+        System.out.println(subQuery);
         productCount = productMapper.selectProductCount(subQuery);
 
         //값이 존재하지 않으면

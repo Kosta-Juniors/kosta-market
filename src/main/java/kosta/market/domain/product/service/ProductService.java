@@ -5,9 +5,7 @@ import kosta.market.domain.product.model.Category;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public interface ProductService {
 
@@ -41,11 +39,14 @@ public interface ProductService {
      *
      * @Param userType 판매자인지 유저인지 구분하는 변수
      * @Param categoryId 카테고리 번호
+     * @Param sortBy 목록 정렬 기준
      * @Param productName 검색할 상품명
+     * @Param size 검색할 상품 개수
+     * @Param page 검색할 상품 페이지
      * @return 등록한 상품이 있다면 List;, 아니면 null
 
      **/
-    List<ProductDto> listProduct(String userType, Integer categoryId, String productName);
+    List<ProductListDto> listProduct(String userType, Integer categoryId, String sortBy, String productName,Integer size, Integer page);
 
     /**
      * 기능 : 상품 상세정보 <br>
@@ -238,35 +239,18 @@ public interface ProductService {
     Integer countProductComment(Integer productId);
 
     /**
-     * 기능 : 카테고리별 추천 상품 <br>
-     * 설명 : <br>
-     * 카테고리식별번호(categoryId)를 입력받아 카테고리 관련 추천 상품 5개 정보를 반환한다. <br>
-     *
-     * @param categoryId 상품식별번호
-     * @return 해당 카테고리에 관련 있는 상품이 존재하면 상품 리스트가 담긴 List&gt;, 아니면 null
-     */
-    List<ProductDto> categoryProductList(Integer categoryId);
-
-    /**
-     * 기능 : 평균평전별 추천 상품 <br>
-     * 설명 : <br>
-     * 평균펼점이 가장 높은 상품 3개 정보를 반환한다. <br>
-     * *
-     *
-     * @return 평균 평점이 가장 높은 상품 3개가 존재하면 상품 리스트가 담긴 List&gt;, 아니면 null
-     */
-    List<ProductTopRatedDto> topRatedProductList();
-
-    /**
      * 기능 : 상품 개수 조회 <br>
      * 설명 : <br>
-     * 상품명(productName), 카테고리식별번호(categoryId)를 입력받아 관련 상품 개수를 반환한다. <br>
+     * 상품명(productName), 카테고리식별번호(categoryId) 등을 입력받아 관련 상품 개수를 반환한다. <br>
      *
-     * @param productName 검색할 상품명
-     * @param categoryId 상품식별번호
-     * @return 해당 상품명 혹은 카테고리에 관련 있는 상품이 존재하면 상품 개수가 담긴 Object&gt;, 아니면 null
+     * @Param userType 판매자인지 유저인지 구분하는 변수
+     * @Param categoryId 카테고리 번호
+     * @Param productName 검색할 상품명
+     * @Param size 검색할 상품 개수
+
+     * @return 해당 상품명 혹은 카테고리에 관련 있는 상품이 존재하면 상품 개수가 담긴 Integer&gt;, 아니면 null
      */
-    Integer countProduct(String productName, Integer categoryId);
+    Integer countProduct(String userType, Integer categoryId, String productName);
 
 
     /**
