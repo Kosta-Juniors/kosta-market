@@ -126,33 +126,60 @@ public class OrderProcessController {
     }
 
 
-        // 구매자,판매자 주문 리스트
-        @GetMapping(value = "/api/order/sheet/list")
-        public ResponseEntity orderALLListByUser(@RequestParam("user-type") int userType) throws JsonProcessingException{
-            ObjectMapper jsonData = new ObjectMapper();
-            Map<String, Object> data = new HashMap<>();
+//        // 구매자,판매자 주문 리스트
+//        @GetMapping(value = "/api/order/sheet/list")
+//        public ResponseEntity orderALLListByUser(@RequestParam("userType") String userType) throws JsonProcessingException{
+//            ObjectMapper jsonData = new ObjectMapper();
+//            Map<String, Object> data = new HashMap<>();
+//
+//            if (Objects.equals(userType, "user")){ // 구매자
+//                int userId = 1; //하드코딩
+//                ArrayList<OrderListDto> orderAllList = service.listByUserIdOrder(userId);
+//                data.put("data", orderAllList);
+//
+//            } else if (Objects.equals(userType, "seller")) { // 판매자
+//                int sellerId = 1; //하드코딩
+//                ArrayList<OrderDetailForSellerDto> orderAllList = service.listBySellerIdOrder(sellerId);
+//                data.put("data", orderAllList);
+//
+//            } else {
+//                return ResponseEntity.notFound().build(); // user-type이 1또는2가 아닐때는?
+//            }
+//
+//
+//            return ResponseEntity.ok(jsonData.writeValueAsString(data));
+//        }
 
-            if (Objects.equals(userType, 1)){ // 구매자
-                int userId = 1; //하드코딩
-                ArrayList<OrderListDto> orderAllList = service.listByUserIdOrder(userId);
-                data.put("data", orderAllList);
+    // 구매자 주문리스트
+    @GetMapping(value = "/api/order/sheet/buyerList")
+    public ResponseEntity orderALLListByBuyer() throws JsonProcessingException{
+        ObjectMapper jsonData = new ObjectMapper();
+        Map<String, Object> data = new HashMap<>();
 
-            } else if (Objects.equals(userType, 2)) { // 판매자
-                int sellerId = 1; //하드코딩
-                ArrayList<OrderDetailForSellerDto> orderAllList = service.listBySellerIdOrder(sellerId);
-                data.put("data", orderAllList);
+        int userId = 1; //하드코딩
+        ArrayList<OrderListDto> orderAllList = service.orderListByBuyer(userId);
+        data.put("data", orderAllList);
 
-            } else {
-                return ResponseEntity.notFound().build(); // user-type이 1또는2가 아닐때는?
-            }
-
-
-            return ResponseEntity.ok(jsonData.writeValueAsString(data));
-        }
+        return ResponseEntity.ok(jsonData.writeValueAsString(data));
+    }
 
 
+    // 판매자 주문리스트
+    @GetMapping(value = "/api/order/sheet/sellerList")
+    public ResponseEntity orderALLListBySeller() throws JsonProcessingException{
+        ObjectMapper jsonData = new ObjectMapper();
+        Map<String, Object> data = new HashMap<>();
 
-    // 주문 상세 정보
+        int sellerId = 1; //하드코딩
+        ArrayList<OrderDetailForSellerDto> orderAllList = service.orderListBySeller(sellerId);
+        data.put("data", orderAllList);
+
+        return ResponseEntity.ok(jsonData.writeValueAsString(data));
+    }
+
+
+
+    // 문 상세 정보
     @GetMapping(value = "/api/order/sheet/{order_id}")
     public ResponseEntity orderDetailForm(@PathVariable("order_id") Object orderId) throws JsonProcessingException {
         ObjectMapper jsonData = new ObjectMapper();

@@ -23,7 +23,7 @@ public interface OrderMapper {
 	int insertOrder();
 	// int orderState 를 0(주문완료)로 입력
 
-	@Insert("INSERT INTO TBL_ORDER_DETAIL VALUES (#{orderId}, #{productId}, #{orderQuantity}, 0, #{orderPrice})")
+	@Insert("INSERT INTO TBL_ORDER_DETAIL VALUES (#{orderId}, #{productId}, #{orderQuantity}, '주문완료', #{orderPrice})")
 	int insertOrderDetail(@Param("orderId")int orderId, @Param("productId")int productId, @Param("orderQuantity")int orderQuantity, @Param("orderPrice")int orderPrice);
 
 	// 가장 최근에 생성된 PK를  foreign 키로 받아오기
@@ -115,16 +115,16 @@ public interface OrderMapper {
 	@Select("SELECT order_state" +
 			" FROM TBL_ORDER_DETAIL" +
 			" WHERE order_id=#{orderId} AND product_id=#{productId}")
-	int getOrderState(@Param("orderId") int orderId, @Param("productId") int productId);
+	String  getOrderState(@Param("orderId") int orderId, @Param("productId") int productId);
 
 	// 주문상태수정 - 교환신청
-	@Update("UPDATE TBL_ORDER_DETAIL SET order_state = 3" +
+	@Update("UPDATE TBL_ORDER_DETAIL SET order_state = '교환신청'" +
 			" WHERE order_id = #{orderId} AND product_id = #{productId}")
 	int updateOrderStateExchange(@Param("orderId") int orderId,
 								 @Param("productId") int productId);
 
-	// 주문상태수정 - 구매취소
-	@Update("UPDATE TBL_ORDER_DETAIL SET order_state = 4" +
+	// 주문상태수정 - 취소/환불
+	@Update("UPDATE TBL_ORDER_DETAIL SET order_state = '취소환불'" +
 			" WHERE order_id = #{orderId} AND product_id=#{productId}")
 	int updateOrderStateCancel(@Param("orderId") int orderId,
 							   @Param("productId") int productId);
@@ -140,7 +140,7 @@ public interface OrderMapper {
 
 
 	// 주문상태수정 - 구매확정
-	@Update("UPDATE TBL_ORDER_DETAIL SET order_state = 5" +
+	@Update("UPDATE TBL_ORDER_DETAIL SET order_state = '구매확정'" +
 			" WHERE order_id = #{orderId} AND product_id=#{productId}")
 	int updateOrderStateConfirm(@Param("orderId") int orderId,
 								@Param("productId") int productId);

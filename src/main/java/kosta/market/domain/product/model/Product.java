@@ -27,4 +27,5 @@ public class Product {
 	private String productDescription;
 	private int productQuantity;
 	private Date productDate;
+	private String deleted;
 }
