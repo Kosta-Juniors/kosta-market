@@ -60,10 +60,11 @@ public class ProductProcessController {
     // ** 카테고리 관련 상품 목록 5가지 가져오기
     @GetMapping(value = "/api/product")
     public ResponseEntity productList(@RequestParam(value = "categoryId", required = false, defaultValue = "0") Integer categoryId,
-                                      @RequestParam(value = "user-type", required = false, defaultValue = "user") String userType,
-                                      @RequestParam(value = "search", required = false, defaultValue = "") String search,
-                                      @RequestParam(value = "sortby", required = false, defaultValue = "") String sortBy,
-                                      @RequestParam(value = "size", required = false, defaultValue = "0") Integer size) throws JsonProcessingException {
+                                      @RequestParam(value = "userType", required = false, defaultValue = "BUYER") String userType,
+                                      @RequestParam(value = "search", required = false, defaultValue = "") String productName,
+                                      @RequestParam(value = "sortBy", required = false, defaultValue = "default") String sortBy,
+                                      @RequestParam(value = "size", required = false, defaultValue = "10") Integer size,
+                                      @RequestParam(value="page", required=false, defaultValue = "1") Integer page) throws JsonProcessingException {
 
         //json 변환작업에 사용되는 ObjectMapper
         ObjectMapper jsonData = new ObjectMapper();
@@ -75,44 +76,9 @@ public class ProductProcessController {
         //data에 담길 ArrayList
         List<Object> productList = new ArrayList();
         //Service에서 넘어온 데이터를 받은 ArrayList
-        ArrayList<ProductDto> productServiceList = null;
+        ArrayList<ProductListDto> productServiceList =
+                (ArrayList<ProductListDto>) productService.listProduct(userType, categoryId, sortBy,  productName, size, page);
 
-        // 평점이 가장 높은 상품 3가지 목록 출력
-        if (sortBy.equals("top")) {
-            if (size == 3) {
-                ArrayList<ProductTopRatedDto> productTopList =
-                        (ArrayList<ProductTopRatedDto>) productService.topRatedProductList();
-                // productTopList가 null값이면
-                if (Objects.equals(productTopList, null)) {
-
-                    errorMessage.put("errorMessage", productService.errorMessage("content"));
-                    data.put("data", errorMessage);
-                    return new ResponseEntity(jsonData.writeValueAsString(data), HttpStatus.NOT_FOUND);
-                }
-                // productTopList 가 존재하면
-
-                for (int i = 0; i < productTopList.size(); i++) {
-                    Map<String, Object> product = new HashMap<>();
-                    product.put("score", productTopList.get(i).getScore());
-                    product.put("productId", productTopList.get(i).getProductId());
-                    product.put("productName", productTopList.get(i).getProductName());
-                    product.put("productPrice", productTopList.get(i).getProductPrice());
-                    product.put("productImgFileName", productTopList.get(i).getProductImgFileName());
-                    product.put("productImgPath", productTopList.get(i).getProductImgPath());
-                    productList.add(product);
-                }
-
-                data.put("data", productList);
-                return new ResponseEntity(jsonData.writeValueAsString(data), HttpStatus.OK);
-            }
-        }
-        // category 관련 상품 5가지 목록 출력
-
-        if (size == 5) {
-            productServiceList = (ArrayList<ProductDto>) productService.categoryProductList(categoryId);
-        } else {
-            productServiceList = (ArrayList<ProductDto>) productService.listProduct(userType, categoryId, search);
-        }
 
         // productServiceList가 null값이면
         if (Objects.equals(productServiceList, null)) {
@@ -126,6 +92,7 @@ public class ProductProcessController {
 
         for (int i = 0; i < productServiceList.size(); i++) {
             Map<String, Object> product = new HashMap<>();
+            product.put("score", productServiceList.get(i).getScore());
             product.put("productId", productServiceList.get(i).getProductId());
             product.put("productName", productServiceList.get(i).getProductName());
             product.put("productPrice", productServiceList.get(i).getProductPrice());
@@ -233,13 +200,12 @@ public class ProductProcessController {
         productDetail.put("categoryName", category.getCategoryName());
         productDetail.put("categoryId", category.getCategoryId());
         data.put("data", productDetail);
-
         return new ResponseEntity(jsonData.writeValueAsString(data), HttpStatus.OK);
     }
 
     // 상품 이미지 출력
     @GetMapping(value = "/api/product/img")
-    public ResponseEntity<byte[]> productImg(@RequestParam("product_img_file_name") String productImgFileName) {
+    public ResponseEntity<byte[]> productImg(@RequestParam("productImgFileName") String productImgFileName) {
         return productService.imgProduct(productImgFileName);
     }
 
@@ -495,7 +461,7 @@ public class ProductProcessController {
     public ResponseEntity productCommentList(@PathVariable("product_id") Integer productId,
                                              @RequestParam(value = "page", required = false, defaultValue = "1") Integer page,
                                              @RequestParam(value = "size", required = false, defaultValue = "10") Integer size,
-                                             @RequestParam(value = "user_id", required = false) Integer userId)
+                                             @RequestParam(value = "userId", required = false) Integer userId)
             throws JsonProcessingException {
 
         ObjectMapper jsonData = new ObjectMapper();
@@ -541,7 +507,7 @@ public class ProductProcessController {
     // 상품 리뷰 개수 가져오기 count
 
     @GetMapping(value = "/api/product/{product_id}/comment/count")
-    public ResponseEntity productCommentCount(@PathVariable("product_id") int productId) throws JsonProcessingException {
+    public ResponseEntity productCommentCount(@PathVariable("product_id") Integer productId) throws JsonProcessingException {
 
         ObjectMapper jsonData = new ObjectMapper();
         Map<String, Object> data = new HashMap<>();
@@ -568,16 +534,17 @@ public class ProductProcessController {
 
     @GetMapping(value = "/api/product/count")
     public ResponseEntity productCount(@RequestParam(value = "categoryId", required = false, defaultValue = "0") Integer categoryId,
-                                       @RequestParam(value = "productName", required = false, defaultValue = "") String productName)
+                                       @RequestParam(value = "userType", required = false, defaultValue = "BUYER") String userType,
+                                       @RequestParam(value = "search", required = false, defaultValue = "") String productName)
             throws JsonProcessingException {
 
         ObjectMapper jsonData = new ObjectMapper();
         Map<String, Object> data = new HashMap<>();
         Map<String, Object> productCount = new HashMap<>();
 
-        Integer productServiceCount = productService.countProduct(productName, categoryId);
+        Integer productServiceCount = productService.countProduct(userType,categoryId,productName);
 
-        // 댓글 목록이 반환되지 않는다면
+        // 상품 개수가 반환되지 않으면
         if (Objects.equals(productServiceCount, null)) {
             Map<String, Object> errorMessage = new HashMap<>();
             errorMessage.put("errorMessage", productService.errorMessage("content"));

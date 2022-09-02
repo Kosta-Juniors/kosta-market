@@ -32,16 +32,27 @@ public interface ProductMapper {
     @Select("SELECT LAST_INSERT_ID()")
     int selectLastInsertId();
 
+    // 상품 리스트 가져오기
+    @Select(" SELECT D.score,A.* " +
+            " FROM TBL_PRODUCT AS A " +
+            " LEFT JOIN TBL_PRODUCT_CATEGORY AS B ON A.product_id=B.product_id " +
+            " LEFT JOIN TBL_SELLER_PRODUCT AS C on A.product_id= C.product_id " +
+            " LEFT JOIN (SELECT product_id, AVG(score) AS score " +
+            " FROM TBL_COMMENT WHERE deleted LIKE 'N' GROUP BY product_id) AS D ON A.product_id=D.product_id " +
+            " WHERE A.deleted LIKE 'N' " +
+            "${subQuery}")
+    List<ProductListDto> selectProductList(@Param("subQuery") String subQuery);
 
-    // 상품 리스트 불러오기
-    @Select("SELECT A.product_id, A.product_name, A.product_price, A.product_description, " +
-            "A.product_img_file_name, A.product_img_path, A.product_quantity " +
-            "FROM TBL_PRODUCT AS A " +
-            "LEFT JOIN TBL_PRODUCT_CATEGORY AS B ON A.product_id=B.product_id " +
-            "LEFT JOIN TBL_SELLER_PRODUCT AS C on A.product_id= C.product_id " +
-            "WHERE deleted LIKE 'N' " + "${subQuery}" + " ORDER BY A.product_id")
-    List<ProductDto> selectProductList(@Param("subQuery") String subQuery);
-
+    // 상품 개수 가져오기
+    @Select(" SELECT COUNT(*) " +
+            " FROM TBL_PRODUCT AS A " +
+            " LEFT JOIN TBL_PRODUCT_CATEGORY AS B ON A.product_id=B.product_id " +
+            " LEFT JOIN TBL_SELLER_PRODUCT AS C on A.product_id= C.product_id " +
+            " LEFT JOIN (SELECT product_id, AVG(score) AS score " +
+            " FROM TBL_COMMENT WHERE deleted LIKE 'N' GROUP BY product_id) AS D ON A.product_id=D.product_id " +
+            " WHERE A.deleted LIKE 'N' " +
+            "${subQuery}")
+    Integer selectProductCount(@Param("subQuery") String subQuery);
 
     // ** 상품 상세 보기
     //상품 테이블에 대한 정보 가져오기
@@ -191,32 +202,7 @@ public interface ProductMapper {
     @Select("SELECT COUNT(*) FROM TBL_COMMENT WHERE deleted LIKE 'N' AND product_id=#{productId}")
     Integer selectCommentCountByproductId(@Param("productId") Integer productId);
 
-    //** 관렴 상품 5가지 랜덤하게 출력
-    @Select("SELECT A.product_id, A.product_name, A.product_price, A.product_Description, " +
-            "A.product_img_file_name, A.product_img_path " +
-            "FROM TBL_PRODUCT AS A " +
-            "LEFT JOIN TBL_PRODUCT_CATEGORY AS B ON A.product_id=B.product_id " +
-            "WHERE B.category_id=#{categoryId} " +
-            "ORDER BY rand() " +
-            "LIMIT 5")
-    List<ProductDto> selectProductByCategoryId(@Param("categoryId") Integer categoryId);
 
-    // 최고의 평점 3개 상품만 가져오기
-    @Select("SELECT A.score,B.* " +
-            " FROM(SELECT product_id, AVG(score) AS score " +
-            " FROM TBL_COMMENT WHERE deleted LIKE 'N' GROUP BY product_id) AS A " +
-            " LEFT JOIN TBL_PRODUCT AS B ON A.product_id=B.product_id " +
-            " WHERE B.deleted LIKE 'N' " +
-            " ORDER BY A.score DESC, B.product_id ASC " +
-            " LIMIT 3")
-     List<ProductTopRatedDto> selectProductByTopScore();
-
-    // 상품 개수 반환
-    @Select("SELECT COUNT(*) FROM TBL_PRODUCT AS A " +
-            "LEFT JOIN TBL_PRODUCT_CATEGORY AS B ON A.product_id=B.product_id " +
-            "WHERE A.deleted LIKE 'N' " +
-            "${subQuery} ")
-    Integer selectProductCount(@Param("subQuery") String subQuery);
 
 }
 
