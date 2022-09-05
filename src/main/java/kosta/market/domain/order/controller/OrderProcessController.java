@@ -151,7 +151,7 @@ public class OrderProcessController {
 //        }
 
     // 구매자 주문리스트
-    @GetMapping(value = "/api/order/sheet/buyerList")
+    @GetMapping(value = "/api/order/buyer")
     public ResponseEntity orderALLListByBuyer() throws JsonProcessingException{
         ObjectMapper jsonData = new ObjectMapper();
         Map<String, Object> data = new HashMap<>();
@@ -165,7 +165,7 @@ public class OrderProcessController {
 
 
     // 판매자 주문리스트
-    @GetMapping(value = "/api/order/sheet/sellerList")
+    @GetMapping(value = "/api/order/seller")
     public ResponseEntity orderALLListBySeller() throws JsonProcessingException{
         ObjectMapper jsonData = new ObjectMapper();
         Map<String, Object> data = new HashMap<>();
@@ -180,7 +180,7 @@ public class OrderProcessController {
 
 
     // 문 상세 정보
-    @GetMapping(value = "/api/order/sheet/{order_id}")
+    @GetMapping(value = "/api/order/{order_id}")
     public ResponseEntity orderDetailForm(@PathVariable("order_id") Object orderId) throws JsonProcessingException {
         ObjectMapper jsonData = new ObjectMapper();
         Map<String, Object> data = new HashMap<>();
@@ -230,7 +230,7 @@ public class OrderProcessController {
 
 
         // 교환 신청
-        @PatchMapping(value = "/api/order/sheet/{order_id}/exchange")
+        @PatchMapping(value = "/api/order/{order_id}/exchange")
         public ResponseEntity orderExchange(@PathVariable("order_id") int orderId, @RequestParam("product_id") int productId) throws JsonProcessingException{
 
             boolean exceptionflag1 = service.handlingIdException(orderId);
@@ -260,7 +260,7 @@ public class OrderProcessController {
         // 환불 신청 - 구매 취소로 통합
 
         // 구매 확정
-        @PatchMapping(value = "/api/order/sheet/{order_id}/confirm")
+        @PatchMapping(value = "/api/order/{order_id}/confirm")
         public ResponseEntity orderConfirm(@PathVariable("order_id") int orderId, @RequestParam("product_id") int productId) throws JsonProcessingException{
 
             boolean exceptionflag1 = service.handlingIdException(orderId);
@@ -288,7 +288,7 @@ public class OrderProcessController {
         }
 
         // 주문 취소
-        @PatchMapping(value = "/api/order/sheet/{order_id}/cancel")
+        @PatchMapping(value = "/api/order-/{order_id}/cancel")
         public ResponseEntity orderCancel(@PathVariable("order_id") int orderId, @RequestParam("product_id") int productId) throws JsonProcessingException{
 
             boolean exceptionflag1 = service.handlingIdException(orderId);
